@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anketa</title>
+</head>
+<body>
+    <script>
+        function check (value, text) {
+            while (value === null || value === "") {
+                value = prompt(text);
+            }
+            return value;
+        }
+
+        let lastName = prompt("Введите фамилию");
+        lastName = check(lastName,"Введите фамилию");
+        
+        let firstName = prompt("Введите имя");
+        firstName = check(firstName,"Введите имя");
+
+        let patronymic = prompt("Введите отчество");
+        patronymic = check(patronymic,"Введите отчество");
+
+        let age = prompt("Введите возраст в годах");
+        let ageNumber = parseInt(age);
+
+        while (isNaN(ageNumber)) {
+            age = prompt("Введите возраст в годах");
+            ageNumber = parseInt(age);
+        }
+
+        let gender = confirm("Ваш пол - мужской?");
+
+        let ageDays = ageNumber*365;
+        let agePlus = ageNumber+5;
+        
+        let genderAlert 
+        if (gender == true) {
+            genderAlert = "мужской"
+        } else {
+            genderAlert = "женский"
+        }
+
+        let pension
+        if (((gender === true) && (ageNumber>62)) || ((gender === false) && (ageNumber>59))) {
+            pension = 'Да'
+        } else {
+            pension = 'Нет'
+        }
+
+        alert (`
+            ваше ФИО: ${lastName} ${firstName} ${patronymic}
+            ваш возраст в годах: ${ageNumber}
+            ваш возраст в днях: ${ageDays}
+            через 5 лет вам будет: ${agePlus}
+            ваш пол: ${genderAlert}
+            вы на пенсии: ${pension}`
+        )
+    </script>
+</body>
+</html>
