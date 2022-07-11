@@ -1,15 +1,29 @@
 let text = prompt("Введите текст");
 
 function fix (str) {
-  while (str[0] === " ") {
-    str = str.substring (1);
-   }
+  
+  let start = 0;
+  let end = str.length;
+
+  for (let i=0; i<str.length; i++) {
+    if (str[i] === " ") {
+      start++;
+    } else {
+      break
+    }
+  }
+
+  for (let i = str.length - 1; i>=0; i--) {
+    if (str[i] === " ") {
+      end--;
+    } else {
+      break
+    }
+  }
+
+  str = str.slice(start,end);
    
-   while (str[str.length - 1] === " ") {
-    str = str.substring (0, str.length - 1);
-   }
-   
-   return str;
+  return str;
 } 
 
 let textNew = fix (text);
