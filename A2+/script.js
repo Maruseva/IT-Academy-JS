@@ -13,12 +13,22 @@ function fix (str) {
     }
   }
 
+  if (start === str.length) {
+    console.log ('Строка выглядит таким образом: *' + str + '*');
+    return "";
+  }
+
   for (let i = str.length - 1; i>=0; i--) {
     if (str[i] === " ") {
       end--;
     } else {
       break
     }
+  }
+
+  if (start === 0 && end === str.length) {
+    console.log ('Строка выглядит таким образом: *' + str + '*');
+    return str;
   }
 
   str = str.slice(start,end);
