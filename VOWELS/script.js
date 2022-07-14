@@ -4,20 +4,20 @@ function getCount (str) {
 
 	let count = 0;
 
-	const letter = ["а", "у", "о", "ы", "э", "я", "ю", "ё", "и", "е", "А", "У", "О", "Ы", "Э", "Я", "Ю", "Ё", "И", "Е"];
+	const letter = {"а": true, "у": true, "о": true, "ы": true, "э": true, "я": true, "ю": true, "ё": true, "и": true, "е": true};
+  
+    str = str.toLowerCase();
   
     for (let i = 0; i < str.length; i++) {
-        for (let j = 0; j < letter.length; j++) {
-            if (letter[j] === str[i]) {
-    	        count++
-            } else {
-    	        continue;
-            }
+       
+        if (str[i] in letter) {
+    	    count++
+        } else {
+    	    continue;
         }
     }
 
-    console.log (count);
     return count;
 }
 
-getCount(text)
+console.log(getCount(text))
