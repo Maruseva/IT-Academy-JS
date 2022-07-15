@@ -12,9 +12,7 @@ function getCount (str) {
        
         if (str[i] in letter) {
     	    count++
-        } else {
-    	    continue;
-        }
+        } 
     }
 
     return count;
