@@ -2,8 +2,7 @@ let text = prompt ("Введите текст");
 
 function pali (str) {
 	
-    let strPali = "";
-
+    let strNew = str;
     const symb = {".": true, ",": true, ";": true, ":": true, "!": true, "?": true, "-": true, "(": true, ")": true, '"': true, ' ': true, 'ъ': true, 'ь': true};
 	
     str = str.toLowerCase();
@@ -11,19 +10,21 @@ function pali (str) {
     
     for (let i=0; i<str.length; i++) {
         if (str[i] in symb) {
-            str = str.replaceAll(str[i],"");
+            strNew = strNew.replaceAll(str[i],"");
         }
     }
     
-    for (let i = (str.length - 1); i >= 0; i--) {
-        strPali += str[i];
+    for (let i = 0; i < ((strNew.length - 1) / 2); i++) {
+    	if (strNew[i] !== strNew[strNew.length - 1 - i]) {
+            return false;
+    	}
     }
-    
-    if (str === strPali) {
-        return "это палиндром";
-    } else {
-        return "это не палиндром"
-    }
+    return true;
 }
 
-alert(pali(text))
+if (pali(text) === true) {
+    alert ("это палиндром");
+} else {
+    alert ("это не палиндром")
+}
+
