@@ -12,13 +12,20 @@ function pali (str) {
             str = str.replaceAll(value,"");
         }
     }
-    
-    for (let i = 0; i < ((str.length - 1) / 2); i++) {
-    	if (str[i] !== str[str.length - 1 - i]) {
+
+    let check = i => {
+        if (str[i] !== str[str.length - 1 - i])  {
             return false;
-    	}
+        } else if ((str[i] === str[str.length - 1 - i]) && (i >= ((str.length - 2) / 2))) {
+            return true;
+        } else {
+            return check(++i);
+        }
     }
-    return true;
+    
+    let result = check(0);
+
+    return result;  
 }
 
 if (pali(text) === true) {
