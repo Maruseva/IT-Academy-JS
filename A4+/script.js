@@ -12,18 +12,18 @@ function pali (str) {
             str = str.replaceAll(value,"");
         }
     }
-
-    let check = i => {
-        if (str[i] !== str[str.length - 1 - i])  {
+    
+    let check = str => {
+        if (str[0] !== str[str.length - 1])  {
             return false;
-        } else if ((str[i] === str[str.length - 1 - i]) && (i >= ((str.length - 2) / 2))) {
+        } else if ((str[0] === str[str.length - 1]) && (str.length <= 3)) {
             return true;
         } else {
-            return check(++i);
+            return check(str.slice(1,-1));
         }
     }
     
-    let result = check(0);
+    let result = check(str);
 
     return result;  
 }
