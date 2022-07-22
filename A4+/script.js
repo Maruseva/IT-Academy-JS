@@ -12,11 +12,13 @@ function pali (str) {
             str = str.replaceAll(value,"");
         }
     }
-    
+
     let check = str => {
-        if (str[0] !== str[str.length - 1])  {
+        if (str.length <= 1) {
+            return true;
+        } else if (str[0] !== str[str.length - 1])  {
             return false;
-        } else if ((str[0] === str[str.length - 1]) && (str.length <= 3)) {
+        } else if  ((str[0] === str[str.length - 1]) && (str.length <= 3)) {
             return true;
         } else {
             return check(str.slice(1,-1));
