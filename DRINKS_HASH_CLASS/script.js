@@ -1,18 +1,21 @@
-function HashStorageFunc () {
+class HashStorageClass {
 
-    this.obj = {};
+    constructor () {
 
-    this.addValue = function (key,value) {
+        this.obj = {};
+    }
+
+    addValue (key,value) {
 
         this.obj[key] = value;
     }
 
-    this.getValue = function (key) {
+    getValue (key) {
 
         return this.obj[key];
     }
 
-    this.deleteValue = function (key) {
+    deleteValue (key) {
 
         if (!(key in this.obj)) {
             return false;
@@ -22,7 +25,7 @@ function HashStorageFunc () {
         }
     }
 
-    this.getKeys = function () {
+    getKeys () {
 
         let arr = [];
 
@@ -35,7 +38,7 @@ function HashStorageFunc () {
     }
 }
 
-let drinkStorage = new HashStorageFunc ();
+let drinkStorage = new HashStorageClass ();
 
 let add = document.getElementById('add');
 add.addEventListener('click', function () {
