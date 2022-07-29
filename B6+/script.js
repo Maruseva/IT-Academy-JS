@@ -1,6 +1,6 @@
-function buildWrapper (tag) {
+function buildWrapper(tag) {
 
-    return function buildWrapper1 (str, atr) {
+    return function(str, atr) {
 
         str = str.replaceAll ("&","&amp;");
         str = str.replaceAll ("<","&lt;");
@@ -25,8 +25,8 @@ function buildWrapper (tag) {
     }
 }
 
-var wrapP=buildWrapper("P");
-var wrapH1=buildWrapper("H1");
+var wrapP = buildWrapper("P");
+var wrapH1 = buildWrapper("H1");
 
 console.log(wrapP("Однажды в студёную зимнюю пору"));
 console.log(wrapP("Однажды в студёную зимнюю пору",{lang:"ru"}));
