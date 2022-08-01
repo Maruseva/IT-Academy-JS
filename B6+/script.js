@@ -2,26 +2,31 @@ function buildWrapper(tag) {
 
     return function(str, atr) {
 
-        str = str.replaceAll ("&","&amp;");
-        str = str.replaceAll ("<","&lt;");
-        str = str.replaceAll (">","&gt;");
-        str = str.replaceAll ('"',"&quot;");
-        str = str.replaceAll ("'","&apos;");
-        
+        function getReplace(a) {
+
+            a = a.replaceAll ("&","&amp;");
+            a = a.replaceAll ("<","&lt;");
+            a = a.replaceAll (">","&gt;");
+            a = a.replaceAll ('"',"&quot;");
+            a = a.replaceAll ("'","&apos;");
+
+            return a;
+        }
+
+        let strReplace = getReplace(str);
+      
         let atrRet = "";
     
         for ( var key in atr) {
 
-            atr[key] = atr[key].replaceAll ("&","&amp;");
-            atr[key] = atr[key].replaceAll ("<","&lt;");
-            atr[key] = atr[key].replaceAll (">","&gt;");
-            atr[key] = atr[key].replaceAll ('"',"&quot;");
-            atr[key] = atr[key].replaceAll ("'","&apos;");
+            let artKey = atr[key];
+
+            let artKeyReplace = getReplace(artKey);
            
-            atrRet += " " + key + "=" + "'" + atr[key] + "'"; 
+            atrRet += " " + key + "=" + "'" + artKeyReplace + "'"; 
         }
     
-        return "<"+ tag + atrRet +  ">" + str + "</" + tag + ">"; 
+        return "<"+ tag + atrRet +  ">" + strReplace + "</" + tag + ">"; 
     }
 }
 
