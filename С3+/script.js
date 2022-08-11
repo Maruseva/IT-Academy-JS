@@ -1,65 +1,68 @@
 function deepComp (a, b) {
-    
-    if (a === b) {
+
+    if (Number.isNaN(a) === true && Number.isNaN(b) === true) {
 
         return true;
+    };
 
-    } else if (a === null || b === null) {
+    if (typeof a === "object" && typeof b === "object" && a !== null & b !== null) {
 
-        return false;
+        if (Array.isArray(a) !== Array.isArray(b)) {
+
+            return false;
+        };
+
+        if ((Array.isArray(a) === true) && (Array.isArray(b) === true)) {
+
+            if (a.length !== b.length) {
+
+                return false;
+
+            } else {
+
+                for (let i = 0; i<a.length; i++) {
+
+                    if  (a[i] !== b[i]) {
         
-    } else if (Number.isNaN(a) === true && Number.isNaN(b) === true) {
+                        let c = deepComp(a[i], b[i]);
+        
+                        if (c === false) {
+        
+                            return false;
+                        };
+                    }; 
+                };
+            };
+        };
 
-        return true;
+        if (Object.keys(a).length !== Object.keys(b).length) {
 
-    } else if (Array.isArray(a) !== Array.isArray(b)) {
+            return false;
 
-        return false;
+        } else {
 
-    } else if ((Array.isArray(a) === true) && (Array.isArray(b) === true) && (a.length === b.length)) {
+            for (let key in a) {
 
-        for (let i = 0; i<a.length; i++) {
-
-            if  (typeof a[i] === "object" && typeof b[i] === "object") {
-
-                let c = deepComp(a[i], b[i]);
-
-                if (c === false) {
+                if (!(key in b)) {
 
                     return false;
-                };
 
-            } else if (a[i] !== b[i]) {
+                } else if (a[key] !== b[key]) {
 
-                return false;
-            }; 
+                    let c = deepComp(a[key], b[key]);
+    
+                    if (c === false) {
+    
+                        return false;  
+                    };
+                }; 
+            };
         };
 
-        return true;
-
-    } else if (typeof a === "object" && typeof b === "object" && Object.keys(a).length === Object.keys(b).length) {
-
-        for (let key in a) {
-
-            if (((key in b) && typeof a[key] === "object" && typeof b[key] === "object") || ((key in b) && Number.isNaN(a[key]) === true)) {
-
-                let c = deepComp(a[key], b[key]);
-
-                if (c === false) {
-
-                    return false;  
-                };
-
-            } else if (!(key in b) || (a[key] !== b[key])) {
-
-                return false;
-            }; 
-        };
-
-        return true;
-
-    } else {
+    } else if (a !== b) {
 
         return false;
     };
+        
+    return true;
 };
