@@ -12,7 +12,7 @@ function deepComp (a, b) {
             return false;
         };
 
-        if ((Array.isArray(a) === true) && (Array.isArray(b) === true)) {
+        if (Array.isArray(a) === true) {
 
             if (a.length !== b.length) {
 
@@ -32,6 +32,8 @@ function deepComp (a, b) {
                         };
                     }; 
                 };
+
+                return true;
             };
         };
 
