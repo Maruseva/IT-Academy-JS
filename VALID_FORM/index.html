@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VALID_FORM</title>
+    <style>
+        .label {
+            display: inline-block;
+            width: 160px;
+        }
+
+        .valid {
+            color: red;
+            display: none;
+        }
+
+        #radioAccommodation {
+            display: inline;
+        }
+    </style>
+</head>
+<body>
+    <form name="info" action="http://fe.it-academy.by/TestForm.php" method="post" novalidate>
+        <label class="label" for="developers">Разработчики:</label>
+        <input type="text" name="developers" id="developers"><span class="valid"> !Заполните поле, оно не должно содержать цифры</span><br>
+        <label class="label" for="title">Название сайта:</label>
+        <input type="text" name="title" id="title"><span class="valid"> !Заполните поле, назавание сайта не должно превышать 20 символов</span><br>
+        <label  class="label"for="url">URL сайта:</label>
+        <input type="text" name="url" id="url"><span class="valid"> !Заполните поле, доменное имя сайта должно заканчиваться на .com</span><br>
+        <label class="label" for="date">Дата запуска сайта:</label>
+        <input type="date" name="date" id="date"><span class="valid"> !Заполните поле, дата запуска не должна быть ранее 01.01.2020</span><br>
+        <label class="label" for="visitors">Посетителей в сутки:</label>
+        <input type="number" name="visitors" id="visitors"><span class="valid"> !Заполните поле, минимум 20 посетителей</span><br>
+        <label class="label" for="mail">E-mail для связи:</label>
+        <input type="text" name="mail" id="mail"><span class="valid"> !Заполните поле, оно должно содержать @</span><br>
+        <label class="label" for="heading">Рубрика каталога:</label>
+        <select name="heading" id="heading">
+            <option value="1">здоровье</option>
+            <option value="2">домашний уют</option>
+            <option value="3">бытовая техника</option>
+        </select><span class="valid"> !Сделайте выбор, рубрика "домашний уют" недоступна</span><br>
+        <div id="radioAccommodation">
+            <span class="label">Размещение:</span>
+            <label for="free">бесплатное</label>
+            <input type="radio" name="accommodation" value="1" id="free">
+            <label for="paid">платное</label>
+            <input type="radio" name="accommodation" value="2" id="paid">
+            <label for="vip">VIP</label>
+            <input type="radio" name="accommodation" value="3" id="vip">
+        </div>
+        <span class="valid"> !Сделайте выбор, вариант "бесплатное" недоступен</span><br>
+        <label class="label" for="reviews">Разрешить отзывы:</label>
+        <input type="checkbox" name="reviews" id="reviews"><span class="valid"> !Необходимо разрешить отзывы</span><br>
+        <label class="label" for="description">Описание сайта:</label><br>
+        <textarea name="description" id="description"></textarea><span class="valid"> !Заполните поле, минимум 20 символов</span><br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <input type="submit" value="Опубликовать">
+    </form>
+    <script src="script.js"></script>
+</body>
+</html>
