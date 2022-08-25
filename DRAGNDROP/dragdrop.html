@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=UTF-8>
+    <title>drag&amp;drop</title>
+  </head>
+  <body style='min-height: 100vh'>
+<img src='http://fe.it-academy.by/Sites/0000007/sax.jpg'>
+<img src='http://fe.it-academy.by/Sites/0000007/Yin_and_Yang.png' width=100>
+<img src='http://fe.it-academy.by/Sites/0000007/Man-and-woman.png' width=150>
+<img src='http://fe.it-academy.by/Sites/0000007/No_smoking.png' style='padding-left: 50px'>
+
+<script>
+
+    window.addEventListener('load',documentReady);
+
+    function documentReady() {
+
+        const img = document.getElementsByTagName("img");
+
+        for(let i = 0; i < img.length; i++) {
+
+            img[i].style.left = img[i].offsetLeft + 'px';
+            img[i].style.top = img[i].offsetTop + 'px';
+        };
+
+        for (let i = 0; i < img.length; i++) {
+
+            img[i].style.position = "absolute";
+        };
+
+        const body = document.getElementsByTagName("body");
+        body[0].addEventListener("mousedown", imgMousedown);
+
+        let zIndex = 1;
+
+        function imgMousedown(event) {
+
+            const picture = event.target;
+            picture.style.cursor = "pointer";
+            picture.style.zIndex = zIndex++;
+
+            let shiftLeft = event.clientX - picture.getBoundingClientRect().left;
+            let shiftTop = event.clientY - picture.getBoundingClientRect().top;
+
+            body[0].addEventListener("mousemove", imgMousemove);
+            body[0].addEventListener("mouseup", imgMouseup);
+
+            function imgMousemove(event) {
+                
+                picture.style.left = (event.pageX - shiftLeft) + "px";
+                picture.style.top = (event.pageY - shiftTop) + "px";
+            };
+
+            function imgMouseup(event) {
+
+                body[0].removeEventListener("mousemove", imgMousemove);
+            };
+        };
+ 
+        body[0].ondragstart = function() {
+
+            return false;
+        };
+    };
+</script>
+
+  </body>
+</html>
