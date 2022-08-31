@@ -95,50 +95,47 @@ function showClock() {
             const minutes=dt.getMinutes();
             const seconds=dt.getSeconds();
             return str0l(hours,2) + ':' + str0l(minutes,2) + ':' + str0l(seconds,2);
-        };
+        }
 
         function str0l(val,len) {
             let strVal=val.toString();
             while ( strVal.length < len )
                 strVal='0'+strVal;
             return strVal;
-        };
-    };
+        }
+    }
 
     let startDate = new Date ();
     startDate.setHours(0);
     startDate.setMinutes(0);
     startDate.setSeconds(0);
-
-    let degrees = 0;
-
-    setTimeout(moveSecond,4);
-    setTimeout(moveMinute,4);
-    setTimeout(moveHour,4);
     
     setInterval(moveSecond, 1000);
 
     function moveSecond () {
 
-        degrees = (new Date() - startDate)/1000*coefDegrees; 
-        secondHand.style.transform = `rotate(${degrees += coefDegrees}deg)`; 
-    };
+        const degrees = (new Date() - startDate)/1000*coefDegrees; 
+        secondHand.style.transform = `rotate(${degrees}deg)`; 
+    }
 
     setInterval(moveMinute, 60000); /* в минуте 60000 миллисекунд */
 
     function moveMinute () {
 
-        degrees = (new Date() - startDate)/60000*coefDegrees; 
-        minuteHand.style.transform = `rotate(${degrees += coefDegrees}deg)`;
-    };
+        const degrees = (new Date() - startDate)/60000*coefDegrees; 
+        minuteHand.style.transform = `rotate(${degrees}deg)`;
+    }
 
     setInterval(moveHour, 720000); /*часовая стрелка проходит одно деление за 12 минут(60/5), а это 12*60000=720000*/
 
     function moveHour () {
 
-        degrees = (new Date() - startDate)/720000*coefDegrees; 
-        hourHand.style.transform = `rotate(${degrees += coefDegrees}deg)`;
-    };
-};
+        const degrees = (new Date() - startDate)/720000*coefDegrees; 
+        hourHand.style.transform = `rotate(${degrees}deg)`;
+    }
 
-
+    updateTime();
+    moveSecond();
+    moveMinute();
+    moveHour();
+}
