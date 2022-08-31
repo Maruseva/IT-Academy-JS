@@ -27,8 +27,37 @@ function showClock() {
         clockHands[i].style.position = `absolute`;
         clockHands[i].style.left = `${clockFace.offsetWidth/2+clockFace.offsetLeft-clockHands[i].offsetWidth/2}px`;
         clockHands[i].style.top = `${clockFace.offsetHeight/2-clockHands[i].offsetHeight+clockHands[i].offsetHeight*0.1}px`; /*короткий край стрелки 10% ее длины*/
+        // clockHands[i].style.transform = `rotate(${360/60}deg)`; /*на циферблате 60 делений */
+        // clockHands[i].style.transformOrigin = `50% 90% 0`;
+        clockHands[i].style.zIndex = `2`;
+    };
+
+    for(let i = 12; i > 0; i--) { /*на циферблате 12 часов*/
+
+        let hour = document.createElement('div');
+        let span = document.createElement('span');
+
+        span.innerText = `${i}`;
+        hour.appendChild(span);
+
         
-    }
+
+        hour.style.background = `#3f9e3f`;
+        hour.style.color = `black`;
+        hour.style.textAlign = `center`;
+        hour.style.fontSize = `${text/12}px`; /* размер шрифта в 12 раз меньше размера диаметра циферблата*/
+        hour.style.borderRadius = `50%`;
+        hour.style.width = `${text/10}px`; /* диаметр цифр в 10 раз меньше даиметра циферблата*/
+        hour.style.height = `${text/10}px`; /* диаметр цифр в 10 раз меньше даиметра циферблата*/
+        hour.style.position = `absolute`;
+
+        let left = `${clockFace.offsetWidth/2+clockFace.offsetLeft-hour.offsetWidth/2}px`;
+        let top = `${text/12}px`;
+        hour.style.left = `${left}`;
+        hour.style.top = `${top}`;
+
+        clockFace.appendChild(hour);
+    };
 
 
     
