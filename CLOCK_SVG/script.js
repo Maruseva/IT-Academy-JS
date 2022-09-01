@@ -24,22 +24,24 @@ startDate.setMilliseconds(0);
 
 function showClock() {
 
-    const text = document.getElementById('text').value;
+    const diametr = document.getElementById('text').value;
     const inputs = document.getElementById('input');
     inputs.style.display = "none";
 
     const svg = document.getElementsByTagName('svg');
-    svg[0].style.width = `${text}`;
-    svg[0].style.height = `${text}`;
+    svg[0].style.width = `${diametr}`;
+    svg[0].style.height = `${diametr}`;
+
+    const radius = diametr/2;
 
     const clockFace = document.getElementById('clock_face');
-    clockFace.style.cx = `${text/2}`;
-    clockFace.style.cy = `${text/2}`;
-    clockFace.style.r = `${text/2}`;
+    clockFace.style.cx = `${radius}`;
+    clockFace.style.cy = `${radius}`;
+    clockFace.style.r = `${radius}`;
     clockFace.style.fill = `#d5c06d`;
 
     let hourPosition = 0; 
-// debugger
+
     for(let i = 12; i > 0; i--) { /*на циферблате 12 часов*/
 
         const hour = document.createElementNS(svgns, "circle");
@@ -48,18 +50,18 @@ function showClock() {
         hourNumber.textContent = `${i}`;
         svg[0].appendChild(hourNumber);
         
-        const hourCenterX = text/2+text*coefHourPosition*Math.sin(hourPosition/180*Math.PI);
-        const hourCenterY = text/2-text*coefHourPosition*Math.cos(hourPosition/180*Math.PI);
+        const hourCenterX = radius+diametr*coefHourPosition*Math.sin(hourPosition/180*Math.PI);
+        const hourCenterY = radius-diametr*coefHourPosition*Math.cos(hourPosition/180*Math.PI);
 
         hour.style.fill = `#3f9e3f`;
-        hour.style.r = `${text/coefHourCircle}`; 
+        hour.style.r = `${diametr/coefHourCircle}`; 
         hour.setAttribute('cx', hourCenterX.toString());
         hour.setAttribute('cy', hourCenterY.toString());
 
         hourNumber.setAttribute('x', hourCenterX.toString());
-        hourNumber.setAttribute('y', hourCenterY.toString());
+        hourNumber.setAttribute('y', (hourCenterY + (diametr/coefHourCircle)/2).toString());
         hourNumber.style.fill = `black`;
-        hourNumber.style.fontSize = `${text/coefFontSize}px`; 
+        hourNumber.style.fontSize = `${diametr/coefFontSize}px`; 
         hourNumber.style.textAnchor = `middle`;
 
         hourPosition += -angl;
@@ -68,36 +70,43 @@ function showClock() {
     const secondHand = document.createElementNS(svgns, "rect");
     svg[0].appendChild(secondHand);
 
-    secondHand.style.width = `${text/coefWidthSecond}px`;
-    secondHand.style.height = `${text*coefHeightSecond}px`; 
+    secondHand.style.width = `${diametr/coefWidthSecond}px`;
+    secondHand.style.height = `${diametr*coefHeightSecond}px`; 
     secondHand.style.rx = `15`;
     secondHand.style.ry = `5`;
-    secondHand.style.transformOrigin = `50% 90% 0`;
-    secondHand.setAttribute('x', `${text/2-text/2/coefWidthSecond}`);
-    secondHand.setAttribute('y', `${text/2-text*coefHeightSecond+text*coefHeightSecond*coefClockHands}`);
+    secondHand.style.transformOrigin = `50% 50% 0`;
+    secondHand.setAttribute('x', `${radius-radius/coefWidthSecond}`);
+    secondHand.setAttribute('y', `${radius-diametr*coefHeightSecond+diametr*coefHeightSecond*coefClockHands}`);
      
     const minuteHand = document.createElementNS(svgns, "rect");
     svg[0].appendChild(minuteHand);
 
-    minuteHand.style.width = `${text/coefWidthMinute}px`;
-    minuteHand.style.height = `${text*coefHeightMinute}px`; 
+    minuteHand.style.width = `${diametr/coefWidthMinute}px`;
+    minuteHand.style.height = `${diametr*coefHeightMinute}px`; 
     minuteHand.style.rx = `15`;
     minuteHand.style.ry = `5`;
-    minuteHand.style.transformOrigin = `50% 90% 0`;
-    minuteHand.setAttribute('x', `${text/2-text/2/coefWidthMinute}`);
-    minuteHand.setAttribute('y', `${text/2-text*coefHeightMinute+text*coefHeightMinute*coefClockHands}`);
+    minuteHand.style.transformOrigin = `50% 50% 0`;
+    minuteHand.setAttribute('x', `${radius-radius/coefWidthMinute}`);
+    minuteHand.setAttribute('y', `${radius-diametr*coefHeightMinute+diametr*coefHeightMinute*coefClockHands}`);
 
     const hourHand = document.createElementNS(svgns, "rect");
     svg[0].appendChild(hourHand);
 
-    hourHand.style.width = `${text/coefWidthHour}px`;
-    hourHand.style.height = `${text*coefHeightHour}px`; 
+    hourHand.style.width = `${diametr/coefWidthHour}px`;
+    hourHand.style.height = `${diametr*coefHeightHour}px`; 
     hourHand.style.rx = `15`;
     hourHand.style.ry = `5`;
-    hourHand.style.transformOrigin = `50% 90% 0`;
-    hourHand.setAttribute('x', `${text/2-text/2/coefWidthHour}`);
-    hourHand.setAttribute('y', `${text/2-text*coefHeightHour+text*coefHeightHour*coefClockHands}`);
+    hourHand.style.transformOrigin = `50% 50% 0`;
+    hourHand.setAttribute('x', `${radius-radius/coefWidthHour}`);
+    hourHand.setAttribute('y', `${radius-diametr*coefHeightHour+diametr*coefHeightHour*coefClockHands}`);
 
+    const date = document.createElementNS(svgns, "text");
+    svg[0].appendChild(date);
+    date.style.fontSize = `${diametr/coefFontSize}px`;
+    date.setAttribute ('x', `${radius}px`);
+    date.setAttribute ('y', `${radius/2}px`);
+    date.style.textAnchor = `middle`;
+    
     setInterval(updateTime,1000);
 
     function updateTime() {
@@ -105,14 +114,8 @@ function showClock() {
         const newDate = new Date();
         const newDateStr = formatDateTime(newDate);
         console.log (newDateStr);
-        const date = document.createElementNS(svgns, "text");
-        svg[0].appendChild(date);
 
         date.textContent = newDateStr;
-        date.style.fontSize = `${text/coefFontSize}px`;
-        date.setAttribute ('x', `${text/2}px`);
-        date.setAttribute ('y', `${text/4}px`);
-        date.style.textAnchor = `middle`;
         
         function formatDateTime(dt) {
 
