@@ -132,13 +132,13 @@ function showClock() {
 
     function moveMinute () {
 
-        const degrees = (new Date().setMilliseconds(0) - startDate)/60000*coefDegrees; 
+        const degrees = (new Date().setMilliseconds(0) - startDate)/60000*coefDegrees; /*в минуте 60000 миллисекунд*/
         minuteHand.style.transform = `rotate(${degrees}deg)`;
     } 
 
     function moveHour () {
 
-        const degrees = (new Date().setMilliseconds(0) - startDate)/720000*coefDegrees; 
+        const degrees = (new Date().setMilliseconds(0) - startDate)/720000*coefDegrees; /*часовая стрелка проходит одно деление за 12 минут(60/5), в них 720000 миллисекунд(12*60000)*/
         hourHand.style.transform = `rotate(${degrees}deg)`;
     }
 
