@@ -14,6 +14,20 @@ const coefClockHands = 0.1; /*короткий край стрелки 10% ее 
 
 let angl = 30; /*угол в одном часе 360/12, расстояние между цифрами*/
 
+let startDate = new Date ();
+startDate.setHours(0);
+startDate.setMinutes(0);
+startDate.setSeconds(0);
+
+let counterMinute = (new Date() - startDate)/1000/60;
+let counterHour = (new Date() - startDate)/1000;
+
+console.log(startDate)
+console.log(startDate.getTime)
+console.log(new Date().setMinutes(0))
+console.log(counterMinute)
+console.log(counterHour)
+
 function showClock() {
 
     const text = document.getElementById('text').value;
@@ -103,30 +117,37 @@ function showClock() {
                 strVal='0'+strVal;
             return strVal;
         }
-    }
 
-    let startDate = new Date ();
-    startDate.setHours(0);
-    startDate.setMinutes(0);
-    startDate.setSeconds(0);
-    
-    setInterval(moveSecond, 1000);
+        moveSecond ();
+
+        counterMinute++;
+
+        if (counterMinute === 60) {  /* в минуте 60 секунд */
+            
+            moveMinute ();
+            counterMinute = 0;
+        }
+
+        counterHour++;
+
+        if (counterHour === 720) { /*часовая стрелка проходит одно деление за 12 минут(60/5), а это 12*60=720 секунд*/
+
+            moveHour ();
+            counterHour = 0;
+        }
+    }
 
     function moveSecond () {
 
-        const degrees = (new Date() - startDate)/1000*coefDegrees; 
-        secondHand.style.transform = `rotate(${degrees}deg)`; 
-    }
-
-    setInterval(moveMinute, 60000); /* в минуте 60000 миллисекунд */
+    const degrees = (new Date() - startDate)/1000*coefDegrees; 
+    secondHand.style.transform = `rotate(${degrees}deg)`;
+    } 
 
     function moveMinute () {
 
         const degrees = (new Date() - startDate)/60000*coefDegrees; 
         minuteHand.style.transform = `rotate(${degrees}deg)`;
-    }
-
-    setInterval(moveHour, 720000); /*часовая стрелка проходит одно деление за 12 минут(60/5), а это 12*60000=720000*/
+    } 
 
     function moveHour () {
 
