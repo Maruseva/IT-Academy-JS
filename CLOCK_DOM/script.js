@@ -11,6 +11,7 @@ const coefFontSize = 12; /* размер шрифта в 12 раз меньше 
 const coefHourCircle = 10; /* диаметр цифр в 10 раз меньше даиметра циферблата*/
 const coefDegrees = 6; /* градусов на одном делении циферблата, 360/60*/ 
 const coefClockHands = 0.1; /*короткий край стрелки 10% ее длины*/
+const coefHourPosition = 0.4 /* центр круга с цифрами распологается от центра циферблата на растоянии 40% диаметра циферблата*/
 const angl = 30; /*угол в одном часе 360/12, расстояние между цифрами*/
 
 let startDate = new Date ();
@@ -72,8 +73,8 @@ function showClock() {
         const clockFaceCenterX = clockFace.offsetLeft+clockFace.offsetWidth/2;
         const clockFaceCenterY = clockFace.offsetTop+clockFace.offsetHeight/2;
 
-        const hourCenterX = clockFaceCenterX+text/2*0.8*Math.sin(hourPosition/180*Math.PI);
-        const hourCenterY = clockFaceCenterY-text/2*0.8*Math.cos(hourPosition/180*Math.PI);
+        const hourCenterX = clockFaceCenterX+text*coefHourPosition*Math.sin(hourPosition/180*Math.PI);
+        const hourCenterY = clockFaceCenterY-text*coefHourPosition*Math.cos(hourPosition/180*Math.PI);
 
         hour.style.left = Math.round(hourCenterX-hour.offsetWidth/2)+'px';
         hour.style.top = Math.round(hourCenterY-hour.offsetHeight/2)+'px';

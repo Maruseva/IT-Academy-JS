@@ -1,8 +1,12 @@
+const svgns = "http://www.w3.org/2000/svg";
+
 const button = document.getElementById('button');
 button.addEventListener("click", showClock);
 
 const coefHourCircle = 20; /* радиус цифр в 20 раз меньше даиметра циферблата*/
 const angl = 30; /*угол в одном часе 360/12, расстояние между цифрами*/
+const coefHourPosition = 0.4 /* центр круга с цифрами распологается от центра циферблата на растоянии 40% диаметра циферблата*/
+const coefFontSize = 12; /* размер шрифта в 12 раз меньше размера диаметра циферблата*/
 
 function showClock() {
 
@@ -24,27 +28,24 @@ function showClock() {
 // debugger
     for(let i = 12; i > 0; i--) { /*на циферблате 12 часов*/
 
-        const hour = document.createElement('circle');
+        const hour = document.createElementNS(svgns, "circle");
         svg[0].appendChild(hour);
-        // const span = document.createElement('span');
-        // span.innerText = `${i}`;
-        // hour.appendChild(span);
+        const hourNumber = document.createElementNS(svgns, "text");
+        hourNumber.textContent = `${i}`;
+        svg[0].appendChild(hourNumber);
         
-        
-        const hourCenterX = text/2+text/2*0.8*Math.sin(hourPosition/180*Math.PI);
-        const hourCenterY = text/2-text/2*0.8*Math.cos(hourPosition/180*Math.PI);
-        
+        const hourCenterX = text/2+text*coefHourPosition*Math.sin(hourPosition/180*Math.PI);
+        const hourCenterY = text/2-text*coefHourPosition*Math.cos(hourPosition/180*Math.PI);
 
         hour.style.fill = `#3f9e3f`;
-        // hour.style.color = `black`;
-        // hour.style.textAlign = `center`;
-        // hour.style.fontSize = `${text/coefFontSize}px`; 
         hour.style.r = `${text/coefHourCircle}`; 
-        // hour.style.height = `${text/coefHourCircle}px`;
         hour.style.cx = `${hourCenterX}`;
         hour.style.cy = `${hourCenterY}`;
 
-        console.log(hourCenterX)
+        hourNumber.style.x = `${hourCenterX}`;
+        hourNumber.style.y = `${hourCenterY}`;
+        hourNumber.style.fill = `black`;
+        hourNumber.style.fontSize = `${text/coefFontSize}px`; 
 
 
         hourPosition += -angl;
