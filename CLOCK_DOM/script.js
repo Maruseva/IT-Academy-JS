@@ -11,22 +11,13 @@ const coefFontSize = 12; /* размер шрифта в 12 раз меньше 
 const coefHourCircle = 10; /* диаметр цифр в 10 раз меньше даиметра циферблата*/
 const coefDegrees = 6; /* градусов на одном делении циферблата, 360/60*/ 
 const coefClockHands = 0.1; /*короткий край стрелки 10% ее длины*/
-
-let angl = 30; /*угол в одном часе 360/12, расстояние между цифрами*/
+const angl = 30; /*угол в одном часе 360/12, расстояние между цифрами*/
 
 let startDate = new Date ();
 startDate.setHours(0);
 startDate.setMinutes(0);
 startDate.setSeconds(0);
-
-let counterMinute = (new Date() - startDate)/1000/60;
-let counterHour = (new Date() - startDate)/1000;
-
-console.log(startDate)
-console.log(startDate.getTime)
-console.log(new Date().setMinutes(0))
-console.log(counterMinute)
-console.log(counterHour)
+startDate.setMilliseconds(0);
 
 function showClock() {
 
@@ -58,6 +49,8 @@ function showClock() {
         clockHands[i].style.zIndex = `2`;
     }
 
+    let hourPosition = 0;
+
     for(let i = 12; i > 0; i--) { /*на циферблате 12 часов*/
 
         const hour = document.createElement('div');
@@ -75,17 +68,17 @@ function showClock() {
         hour.style.width = `${text/coefHourCircle}px`; 
         hour.style.height = `${text/coefHourCircle}px`;
         hour.style.position = `absolute`;
-        
-        angl += -30;
 
         const clockFaceCenterX = clockFace.offsetLeft+clockFace.offsetWidth/2;
         const clockFaceCenterY = clockFace.offsetTop+clockFace.offsetHeight/2;
 
-        const hourCenterX = clockFaceCenterX+text/2*0.8*Math.sin(angl/180*Math.PI);
-        const hourCenterY = clockFaceCenterY-text/2*0.8*Math.cos(angl/180*Math.PI);
+        const hourCenterX = clockFaceCenterX+text/2*0.8*Math.sin(hourPosition/180*Math.PI);
+        const hourCenterY = clockFaceCenterY-text/2*0.8*Math.cos(hourPosition/180*Math.PI);
 
         hour.style.left = Math.round(hourCenterX-hour.offsetWidth/2)+'px';
         hour.style.top = Math.round(hourCenterY-hour.offsetHeight/2)+'px';
+
+        hourPosition += -angl;
     }
 
     setInterval(updateTime,1000);
@@ -120,38 +113,32 @@ function showClock() {
 
         moveSecond ();
 
-        counterMinute++;
-
-        if (counterMinute === 60) {  /* в минуте 60 секунд */
+        if (newDate.getSeconds() === 0) {
             
             moveMinute ();
-            counterMinute = 0;
         }
 
-        counterHour++;
-
-        if (counterHour === 720) { /*часовая стрелка проходит одно деление за 12 минут(60/5), а это 12*60=720 секунд*/
+        if (newDate.getMinutes()%12 === 0 && newDate.getSeconds() === 0) { /*часовая стрелка проходит одно деление за 12 минут(60/5)*/
 
             moveHour ();
-            counterHour = 0;
         }
     }
 
     function moveSecond () {
 
-    const degrees = (new Date() - startDate)/1000*coefDegrees; 
+    const degrees = (new Date().setMilliseconds(0) - startDate)/1000*coefDegrees; 
     secondHand.style.transform = `rotate(${degrees}deg)`;
     } 
 
     function moveMinute () {
 
-        const degrees = (new Date() - startDate)/60000*coefDegrees; 
+        const degrees = (new Date().setMilliseconds(0) - startDate)/60000*coefDegrees; 
         minuteHand.style.transform = `rotate(${degrees}deg)`;
     } 
 
     function moveHour () {
 
-        const degrees = (new Date() - startDate)/720000*coefDegrees; 
+        const degrees = (new Date().setMilliseconds(0) - startDate)/720000*coefDegrees; 
         hourHand.style.transform = `rotate(${degrees}deg)`;
     }
 
