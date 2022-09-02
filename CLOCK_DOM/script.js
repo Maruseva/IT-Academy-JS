@@ -13,12 +13,7 @@ const coefDegrees = 6; /* градусов на одном делении циф
 const coefClockHands = 0.1; /*короткий край стрелки 10% ее длины*/
 const coefHourPosition = 0.4 /* центр круга с цифрами распологается от центра циферблата на растоянии 40% диаметра циферблата*/
 const angl = 30; /*угол в одном часе 360/12, расстояние между цифрами*/
-
-let startDate = new Date ();
-startDate.setHours(0);
-startDate.setMinutes(0);
-startDate.setSeconds(0);
-startDate.setMilliseconds(0);
+const coefMinuts = 12; /*часовая стрелка проходит одно деление за 12 минут(60/5)*/
 
 function showClock() {
 
@@ -127,19 +122,19 @@ function showClock() {
 
     function moveSecond () {
 
-    const degrees = (new Date().setMilliseconds(0) - startDate)/1000*coefDegrees; 
-    secondHand.style.transform = `rotate(${degrees}deg)`;
+        const degrees = new Date().getSeconds()*coefDegrees; 
+        secondHand.style.transform = `rotate(${degrees}deg)`;
     } 
-
+    
     function moveMinute () {
-
-        const degrees = (new Date().setMilliseconds(0) - startDate)/60000*coefDegrees; /*в минуте 60000 миллисекунд*/
+    
+        const degrees = new Date().getMinutes()*coefDegrees;
         minuteHand.style.transform = `rotate(${degrees}deg)`;
-    } 
-
+    }     
+    
     function moveHour () {
-
-        const degrees = (new Date().setMilliseconds(0) - startDate)/720000*coefDegrees; /*часовая стрелка проходит одно деление за 12 минут(60/5), в них 720000 миллисекунд(12*60000)*/
+    
+        const degrees = new Date().getHours()*angl+Math.floor(new Date().getMinutes()/coefMinuts)*coefDegrees;
         hourHand.style.transform = `rotate(${degrees}deg)`;
     }
 
