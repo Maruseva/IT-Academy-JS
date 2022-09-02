@@ -2,7 +2,8 @@ function calc (str) {
 
     let arr;
     let arrSolution = [];
-   
+    let operations = {"-": true, "+": true, "*": true, "/": true};
+    
     if(typeof str === 'string') {
 
         arr = str.split("");
@@ -10,7 +11,7 @@ function calc (str) {
     } else {
 
         arr = str;
-    };
+    }
 
     if(arr.indexOf("(") !== -1) {
 
@@ -19,63 +20,85 @@ function calc (str) {
 
         arr.splice(arr.indexOf("("), (arr.indexOf(")") - arr.indexOf("(") + 1), parenthesesSolution);
         calc(arr);
-    };
+    }
 
     for (let i = 0; i < arr.length; i++) {
 
-        if (((arr[i] !== "-" && arr[i] !== "+" && arr[i] !== "*" && arr[i] !== "/") && (arrSolution[arrSolution.length-1] === "-") &&
-        (arrSolution[arrSolution.length-2] === "-" || arrSolution[arrSolution.length-2] === "+" || arrSolution[arrSolution.length-2] === "*" || arrSolution[arrSolution.length-2] === "/" || arrSolution[arrSolution.length-2] === undefined)) ||
-        ((i > 0) && (arr[i] !== "-" && arr[i] !== "+" && arr[i] !== "*" && arr[i] !== "/") 
-        && (arrSolution[arrSolution.length-1] !== "-" && arrSolution[arrSolution.length-1] !== "+" && arrSolution[arrSolution.length-1] !== "*" && arrSolution[arrSolution.length-1] !== "/"))) {
+        if ((i > 0) && !(arr[i] in operations) && !(arrSolution[arrSolution.length-1] in operations)) {
 
             arrSolution[arrSolution.length-1] += arr[i];
 
         } else {
-
+            
             arrSolution[arrSolution.length] = arr[i];
-        };
-    };
+        }
+    }
 
-    if (arrSolution.includes("*") || arrSolution.includes("/")) {
+    for (let i = 0; i < arrSolution.length; i++) {
 
-        for (let i = 0; i < arrSolution.length; i++) {
+        if (arrSolution[i] === "-" && (arrSolution[i-1] in operations || arrSolution[i-1] === undefined)) {
 
-            if (arrSolution[i] === "*") {
-    
-                const result = arrSolution[i-1] * arrSolution[i+1];
-    
-                arrSolution.splice(i-1, 3, result)
-            };
-    
-            if (arrSolution[i] === "/") {
-    
-                const result = arrSolution[i-1] / arrSolution[i+1];
-    
-                arrSolution.splice(i-1, 3, result)
-            };
-        };  
-    };
+            arrSolution.splice(i, 2, arrSolution[i+1] * (-1));
+        }
+    }
 
-    if (arrSolution.includes("-") || arrSolution.includes("+")) {
+    return count(arrSolution);
 
-        for (let i = 0; i < arrSolution.length; i++) {
+    function count (a) {
 
-            if (arrSolution[i] === "-") {
-    
-                const result = arrSolution[i-1] - arrSolution[i+1];
-    
-                arrSolution.splice(i-1, 3, result)
-            };
-    
-            if (arrSolution[i] === "+") {
-    
-                const result = Number(arrSolution[i-1]) + Number(arrSolution[i+1]);
-    
-                arrSolution.splice(i-1, 3, result)
-            };
-        };
-    };
+        if (arrSolution.length > 1) {
 
-    return arrSolution[0];
-};
-console.log(calc("2*(-3.5+1)")) 
+            if (a.includes("*") || a.includes("/")) {
+
+                for (let i = 0; i < a.length; i++) {
+        
+                    if (a[i] === "*") {
+            
+                        const result = a[i-1] * a[i+1];
+            
+                        a.splice(i-1, 3, result);
+    
+                        return count (a);
+                    }
+            
+                    if (a[i] === "/") {
+            
+                        const result = a[i-1] / a[i+1];
+            
+                        a.splice(i-1, 3, result);
+                        
+                        return count (a);
+                    }
+                }; 
+            }
+        
+            if (a.includes("-") || a.includes("+")) {
+        
+                for (let i = 0; i < a.length; i++) {
+        
+                    if (a[i] === "-") {
+            
+                        const result = a[i-1] - a[i+1];
+            
+                        a.splice(i-1, 3, result);
+                        
+                        return count (a);
+                    }
+            
+                    if (a[i] === "+") {
+            
+                        const result = Number(a[i-1]) + Number(a[i+1]);
+            
+                        a.splice(i-1, 3, result);
+                        
+                        return count (a);
+                    }
+                }
+            }
+    
+        } else {
+    
+            return arrSolution[0];
+        } 
+    }
+}
