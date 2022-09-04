@@ -22,8 +22,6 @@ function showClock() {
     const inputs = document.getElementById('input');
     inputs.style.display = "none";
 
-    setInterval(updateTime,1000);
-
     function updateTime() {
 
         const clockFace = document.getElementById('clock_face');
@@ -51,15 +49,16 @@ function showClock() {
             context.fillStyle = 'black';
             context.beginPath();
             context.font = `normal ${diametr/coefFontSize}px Arial`;
-            context.fillText (i, hourCenterX, hourCenterY);
             context.textAlign = `center`;
             context.textBaseline = `middle`;
+            context.fillText (i, hourCenterX, hourCenterY);
 
             hourPosition += -angl;
         }
 
         const newDate = new Date();
         const newDateStr = formatDateTime(newDate);
+        const ms = newDate.getMilliseconds();
         console.log (newDateStr);
             
         function formatDateTime(dt) {
@@ -84,35 +83,43 @@ function showClock() {
         context.textAlign = `center`;
         context.textBaseline = `middle`;
 
+        context.save();
         context.beginPath();
         context.lineWidth=diametr/coefWidthSecond;
         context.lineCap='round';
+        context.translate(radius, radius);
+        context.rotate(new Date().getSeconds()*coefDegrees/180*Math.PI);
+        context.translate(-radius, -radius);
         context.moveTo(radius,radius-diametr*coefHeightSecond+diametr*coefHeightSecond*coefClockHands);
         context.lineTo(radius,radius+diametr*coefHeightSecond*coefClockHands);
-        context.rotate(new Date().getSeconds()*coefDegrees/180*Math.PI);
         context.stroke();
+        context.restore();
 
+        context.save();
         context.beginPath();
         context.lineWidth=diametr/coefWidthMinute;
         context.lineCap='round';
-        context.translate(radius*(-1), radius*(-1));
+        context.translate(radius, radius);
         context.rotate(new Date().getMinutes()*coefDegrees/180*Math.PI);
-        
+        context.translate(-radius, -radius);
         context.moveTo(radius,radius-diametr*coefHeightMinute+diametr*coefHeightMinute*coefClockHands);
-        context.lineTo(radius,radius+diametr*coefHeightMinute*coefClockHands);
-       
+        context.lineTo(radius,radius+diametr*coefHeightMinute*coefClockHands)
         context.stroke();
+        context.restore();
 
-
+        context.save();
         context.beginPath();
         context.lineWidth=diametr/coefWidthHour;
         context.lineCap='round';
+        context.translate(radius, radius);
+        context.rotate((new Date().getHours()*angl+Math.floor(new Date().getMinutes()/coefMinuts)*coefDegrees)/180*Math.PI);
+        context.translate(-radius, -radius);
         context.moveTo(radius,radius-diametr*coefHeightHour+diametr*coefHeightHour*coefClockHands);
         context.lineTo(radius,radius+diametr*coefHeightHour*coefClockHands);
-        context.translate(-radius, -radius);
-        context.rotate((new Date().getHours()*angl+Math.floor(new Date().getMinutes()/coefMinuts)*coefDegrees)/180*Math.PI);
         context.stroke();
+        context.restore();
 
+        setTimeout(updateTime,1020-ms);
     }
 
     updateTime()
