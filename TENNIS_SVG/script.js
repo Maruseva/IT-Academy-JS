@@ -25,8 +25,12 @@ const svg = document.createElementNS(svgns, 'svg');
 svg.setAttribute ('width', `${width}`);
 svg.setAttribute ('height', '400');
 
+const g = document.createElementNS(svgns, 'g');
+g.style.cursor = `pointer`;
+svg.appendChild(g);
+
 const btn = document.createElementNS(svgns, 'rect');
-svg.appendChild(btn);
+g.appendChild(btn);
 btn.setAttribute ('x', '0');
 btn.setAttribute ('y', '0');
 btn.setAttribute ('width', `${widthBtn}`);
@@ -34,7 +38,7 @@ btn.setAttribute ('height', `${heightBtn}`);
 btn.setAttribute ('fill', 'gray');
 
 const text = document.createElementNS(svgns, 'text');
-svg.appendChild(text);
+g.appendChild(text);
 text.textContent = 'cтарт!';
 text.setAttribute ('x', `${widthBtn/2}`);
 text.setAttribute ('y', `15`);
@@ -91,9 +95,9 @@ function preload() {
 
 preload();
 
-btn.addEventListener ('click', start);
-// window.addEventListener('keydown', increaseSpeed);
-// window.addEventListener('keyup', decreaseSpeed);
+g.addEventListener ('click', start);
+window.addEventListener('keydown', increaseSpeed);
+window.addEventListener('keyup', decreaseSpeed);
 
 function start() {
     if(!(timer)) {
@@ -108,14 +112,13 @@ function start() {
 function tick() {
     ballX += ballSpeedX;
     ballY += ballSpeedY;
-    console.log(ballX)
 
-    if(ballX - ballSize < racquetWidth && ballY + ballSize < racquetLY+racquetHeight && ballY-ballSize > racquetLY) {
+    if(ballX - ballSize < racquetWidth && ballY - ballSize < racquetLY+racquetHeight && ballY+ballSize > racquetLY) {
         ballSpeedX = -ballSpeedX;
-        ballX = racquetWidth - ballSize;
+        ballX = racquetWidth + ballSize;
     }
 
-    if((ballX+ballSize > width-racquetWidth) && (ballY + ballSize < racquetRY+racquetHeight) && (ballY+ballSize > racquetRY)) {
+    if((ballX+ballSize > width-racquetWidth) && (ballY - ballSize < racquetRY+racquetHeight) && (ballY+ballSize > racquetRY)) {
         ballSpeedX = -ballSpeedX;
         ballX = width-racquetWidth-ballSize;
     }
@@ -132,44 +135,80 @@ function tick() {
         countL += 1;
     }
 
-    if(ballY - ballSize< 0) {
+    if(ballY - ballSize < heightBtn + 10) {
         ballSpeedY = -ballSpeedY;
-        ballY = ballSize;
+        ballY = heightBtn + 10 + ballSize;
     }
 
-    if(ballY + ballSize > height) {
+    if(ballY + ballSize  > height + heightBtn + 10) {
         ballSpeedY = -ballSpeedY;
-        ballY = height - ballSize;
+        ballY = height + heightBtn + 10 - ballSize;
     }
 
     ball.setAttribute ('cx', `${ballX}`);
     ball.setAttribute ('cy', `${ballY}`);
 
-    if ( ballX === 0 || ballX === width - ballSize) {
+    if ( ballX === ballSize || ballX === width - ballSize) {
         stop();
         return
     }
 
-    if (racquetLY + racquetHeight > height) {
-        racquetLY = height - racquetHeight;
+    if (racquetLY + racquetHeight > height + heightBtn + 10) {
+        racquetLY = height + heightBtn + 10 - racquetHeight;
     }
 
-    if (racquetLY < 0) {
-        racquetLY = 0;
+    if (racquetLY < heightBtn + 10) {
+        racquetLY = heightBtn + 10;
     }
 
-    if (racquetRY + racquetHeight > height) {
-        racquetRY = height - racquetHeight;
+    if (racquetRY + racquetHeight > height + heightBtn + 10) {
+        racquetRY = height + heightBtn + 10 - racquetHeight;
     }
 
-    if (racquetRY < 0) {
-        racquetRY = 0;
+    if (racquetRY < heightBtn + 10) {
+        racquetRY = heightBtn + 10;
     }
 
     racquetLY += racquetSpeedL;
-    racquetL.style.top = `${racquetLY}px`;
+    racquetL.setAttribute ('y', `${racquetLY}`);
     racquetRY += racquetSpeedR;
-    racquetR.style.top = `${racquetRY}px`;
-  
+    racquetR.setAttribute ('y', `${racquetRY}`);
+    console.log(racquetLY)
     requestAnimationFrame(tick);
+}
+
+function increaseSpeed(event) {
+    if(event.keyCode === 16) {
+        racquetSpeedL = -1;
+    }
+
+    if(event.keyCode === 17) {
+        racquetSpeedL = 1;
+    }
+
+    if(event.keyCode === 38) {
+        racquetSpeedR = -1;
+    }
+
+    if(event.keyCode === 40) {
+        racquetSpeedR = 1;
+    }  
+}
+
+function decreaseSpeed(event) {
+    if(event.keyCode === 16 || event.keyCode === 17) {
+        racquetSpeedL = 0;
+    }
+
+    if(event.keyCode === 38 || event.keyCode === 40) {
+        racquetSpeedR = 0;
+    } 
+}
+
+function stop() {
+    score.textContent = `${countL} : ${countR}`;
+    cancelAnimationFrame(timer);
+    timer = 0;
+    racquetSpeedL = 0;
+    racquetSpeedR = 0;
 }
