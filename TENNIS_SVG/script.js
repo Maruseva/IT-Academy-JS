@@ -1,4 +1,5 @@
 const svgns = "http://www.w3.org/2000/svg";
+let timer = 0;
 const width = 400;
 const height = 200;
 const widthBtn = 70;
@@ -9,11 +10,13 @@ const racquetWidth = 10;
 const racquetHeight = 60;
 let racquetLY;
 let racquetRY;
+let racquetSpeedL = 0;
+let racquetSpeedR = 0;
 const ballSize = 10;
 let ballX;
 let ballY;
-let ballSpiedX = 2;
-let ballSpiedY;
+let ballSpeedX = 2;
+let ballSpeedY;
 
 const body = document.getElementsByTagName('body');
 body[0].style.cssText = `display: flex; justify-content: center;`;
@@ -56,27 +59,117 @@ court.setAttribute ('stroke', 'black');
 
 const racquetL = document.createElementNS(svgns, 'rect'); 
 svg.appendChild(racquetL);
-racquetL.setAttribute ('x', '0');
-racquetL.setAttribute ('y', `${racquetLY}`);
 racquetL.setAttribute ('width', `${racquetWidth}`);
 racquetL.setAttribute ('height', `${racquetHeight}`);
 racquetL.setAttribute ('fill', 'green');
 
 const racquetR = document.createElementNS(svgns, 'rect'); 
 svg.appendChild(racquetR);
-racquetR.setAttribute ('x', `${width-racquetWidth}`);
-racquetR.setAttribute ('y', `${racquetR}`);
 racquetR.setAttribute ('width', `${racquetWidth}`);
 racquetR.setAttribute ('height', `${racquetHeight}`);
 racquetR.setAttribute ('fill', 'blue');
 
 const ball = document.createElementNS(svgns, 'circle');
 svg.appendChild(ball);
-ball.setAttribute ('cx', `${ballX}`);
-ball.setAttribute ('cy', `${ballY}`);
 ball.setAttribute ('r', `${ballSize}`);
 ball.setAttribute ('fill', 'red');
 
 body[0].appendChild(svg);
 
-btn.addEventListener('click', start);
+function preload() {
+    ballX = width / 2;
+    ballY = height / 2 + heightBtn + 10;
+    ball.setAttribute ('cx', `${ballX}`);
+    ball.setAttribute ('cy', `${ballY}`);
+    racquetLY = (height / 2 + heightBtn + 10) - racquetHeight / 2;
+    racquetRY = (height / 2 + heightBtn + 10) - racquetHeight / 2;
+    racquetL.setAttribute ('x', '0');
+    racquetL.setAttribute ('y', `${racquetLY}`);
+    racquetR.setAttribute ('x', `${width-racquetWidth}`);
+    racquetR.setAttribute ('y', `${racquetRY}`);
+}
+
+preload();
+
+btn.addEventListener ('click', start);
+// window.addEventListener('keydown', increaseSpeed);
+// window.addEventListener('keyup', decreaseSpeed);
+
+function start() {
+    if(!(timer)) {
+        ballSpeedY = Math.random() * ((Math.random() < 0.5) ? -1 : 1);
+        ballSpeedX *= ((Math.random() < 0.5) ? -1 : 1);
+    
+        preload();
+        timer = requestAnimationFrame(tick);
+    }
+}
+
+function tick() {
+    ballX += ballSpeedX;
+    ballY += ballSpeedY;
+    console.log(ballX)
+
+    if(ballX - ballSize < racquetWidth && ballY + ballSize < racquetLY+racquetHeight && ballY-ballSize > racquetLY) {
+        ballSpeedX = -ballSpeedX;
+        ballX = racquetWidth - ballSize;
+    }
+
+    if((ballX+ballSize > width-racquetWidth) && (ballY + ballSize < racquetRY+racquetHeight) && (ballY+ballSize > racquetRY)) {
+        ballSpeedX = -ballSpeedX;
+        ballX = width-racquetWidth-ballSize;
+    }
+
+    if(ballX - ballSize <= 0) {
+        ballX = ballSize;
+        ballSpeedY = 0;
+        countR += 1;
+    }
+    
+    if(ballX + ballSize >= width) {
+        ballX = width - ballSize;
+        ballSpeedY = 0;
+        countL += 1;
+    }
+
+    if(ballY - ballSize< 0) {
+        ballSpeedY = -ballSpeedY;
+        ballY = ballSize;
+    }
+
+    if(ballY + ballSize > height) {
+        ballSpeedY = -ballSpeedY;
+        ballY = height - ballSize;
+    }
+
+    ball.setAttribute ('cx', `${ballX}`);
+    ball.setAttribute ('cy', `${ballY}`);
+
+    if ( ballX === 0 || ballX === width - ballSize) {
+        stop();
+        return
+    }
+
+    if (racquetLY + racquetHeight > height) {
+        racquetLY = height - racquetHeight;
+    }
+
+    if (racquetLY < 0) {
+        racquetLY = 0;
+    }
+
+    if (racquetRY + racquetHeight > height) {
+        racquetRY = height - racquetHeight;
+    }
+
+    if (racquetRY < 0) {
+        racquetRY = 0;
+    }
+
+    racquetLY += racquetSpeedL;
+    racquetL.style.top = `${racquetLY}px`;
+    racquetRY += racquetSpeedR;
+    racquetR.style.top = `${racquetRY}px`;
+  
+    requestAnimationFrame(tick);
+}
