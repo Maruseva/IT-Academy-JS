@@ -14,17 +14,20 @@ wrap.appendChild(btn);
 wrap.appendChild(score);
 wrap.appendChild(court);
 
+let timer = 0;
 const width = 400;
 const height = 200;
 const ballSize = 20;
 let ballX;
 let ballY;
-let ballSpiedX = 2;
-let ballSpiedY;
+let ballSpeedX = 2;
+let ballSpeedY;
 const racquetWidth = 10;
 const racquetHeight = 60;
 let racquetLY;
 let racquetRY;
+let racquetSpeedL = 0;
+let racquetSpeedR = 0;
 let countL = 0;
 let countR = 0;
 
@@ -39,22 +42,20 @@ ball.style.borderRadius = `50%`;
 ball.style.width = `${ballSize}px`;
 ball.style.height = `${ballSize}px`;
 ball.style.position = `absolute`;
+ball.style.zIndex = `1`;
 
 racquetL.style.width = `${racquetWidth}px`;
 racquetL.style.height = `${racquetHeight}px`;
 racquetL.style.background = `green`;
 racquetL.style.position = `absolute`;
-// `${}`;
 racquetR.style.width = `${racquetWidth}px`;
 racquetR.style.height = `${racquetHeight}px`;
 racquetR.style.background = `blue`;
 racquetR.style.position = `absolute`;
-// `${}`;
-// `${}`;
 
 body[0].appendChild(wrap);
 
-function prelude() {
+function preload() {
     ballX = width / 2 - ballSize / 2;
     ballY = height / 2 - ballSize / 2;
     ball.style.left = `${ballX}px`;
@@ -66,75 +67,122 @@ function prelude() {
     racquetR.style.left = `${width - racquetWidth}px`;
 }
 
-prelude();
+preload();
 
 btn.addEventListener('click', start);
+window.addEventListener('keydown', increaseSpeed);
+window.addEventListener('keyup', decreaseSpeed);
 
 function start() {
-    ballSpiedY = Math.random() * ((Math.random() < 0.5) ? -1 : 1);
-    ballSpiedX *= ((Math.random() < 0.5) ? -1 : 1);
-
-    prelude();
-    requestAnimationFrame(tick);
+    if(!(timer)) {
+        ballSpeedY = Math.random() * ((Math.random() < 0.5) ? -1 : 1);
+        ballSpeedX *= ((Math.random() < 0.5) ? -1 : 1);
+    
+        preload();
+        timer = requestAnimationFrame(tick);
+    }
 }
 
 function tick() {
-    debugger
-    ballX += ballSpiedX;
-    ballY += ballSpiedY;
-    ball.style.left = `${ballX}px`;
-    ball.style.top = `${ballY}px`;
+    ballX += ballSpeedX;
+    ballY += ballSpeedY;
 
-    if(ballX < racquetWidth && ballY-ballSize/2 < racquetLY+racquetHeight && ballY+ballSize/2 > racquetLY) {
-        ballSpiedX = -ballSpiedX;
+    if(ballX < racquetWidth && ballY < racquetLY+racquetHeight && ballY+ballSize > racquetLY) {
+        ballSpeedX = -ballSpeedX;
         ballX = racquetWidth;
     }
 
-    if((ballX+ballSize > width-racquetWidth) && (ballY-ballSize/2 < racquetRY+racquetHeight) && (ballY+ballSize/2 > racquetRY)) {
-        ballSpiedX = -ballSpiedX;
-        ballX = width-racquetWidth;
-        console.log(ballX)
+    if((ballX+ballSize > width-racquetWidth) && (ballY < racquetRY+racquetHeight) && (ballY+ballSize > racquetRY)) {
+        ballSpeedX = -ballSpeedX;
+        ballX = width-racquetWidth-ballSize;
     }
 
-    if(ballX < 0) {
+    if(ballX <= 0) {
         ballX = 0;
-        ballSpiedY = 0;
+        ballSpeedY = 0;
         countR += 1;
-        return stop ();
     }
-
-    if(ballX + ballSize > width) {
+    
+    if(ballX + ballSize >= width) {
         ballX = width - ballSize;
-        ballSpiedY = 0;
+        ballSpeedY = 0;
         countL += 1;
-        return stop ();
     }
 
     if(ballY < 0) {
-        ballSpiedY = -ballSpiedY;
+        ballSpeedY = -ballSpeedY;
         ballY = 0;
     }
 
     if(ballY + ballSize > height) {
-        ballSpiedY = -ballSpiedY;
+        ballSpeedY = -ballSpeedY;
         ballY = height - ballSize;
     }
 
-    document.addEventListener('keydown', )
+    ball.style.left = `${ballX}px`;
+    ball.style.top = `${ballY}px`;
 
-    
+    if ( ballX === 0 || ballX === width - ballSize) {
+        stop();
+        return
+    }
 
+    if (racquetLY + racquetHeight > height) {
+        racquetLY = height - racquetHeight;
+    }
 
-    
-    
-    
+    if (racquetLY < 0) {
+        racquetLY = 0;
+    }
+
+    if (racquetRY + racquetHeight > height) {
+        racquetRY = height - racquetHeight;
+    }
+
+    if (racquetRY < 0) {
+        racquetRY = 0;
+    }
+
+    racquetLY += racquetSpeedL;
+    racquetL.style.top = `${racquetLY}px`;
+    racquetRY += racquetSpeedR;
+    racquetR.style.top = `${racquetRY}px`;
+  
     requestAnimationFrame(tick);
+}
+
+function increaseSpeed(event) {
+    if(event.keyCode === 16) {
+        racquetSpeedL = -1;
+    }
+
+    if(event.keyCode === 17) {
+        racquetSpeedL = 1;
+    }
+
+    if(event.keyCode === 38) {
+        racquetSpeedR = -1;
+    }
+
+    if(event.keyCode === 40) {
+        racquetSpeedR = 1;
+    }  
+}
+
+function decreaseSpeed(event) {
+    if(event.keyCode === 16 || event.keyCode === 17) {
+        racquetSpeedL = 0;
+    }
+
+    if(event.keyCode === 38 || event.keyCode === 40) {
+        racquetSpeedR = 0;
+    } 
 }
 
 function stop() {
     score.innerText = `${countL} : ${countR}`;
+    cancelAnimationFrame(timer);
+    timer = 0;
+    racquetSpeedL = 0;
+    racquetSpeedR = 0;
 }
-
-
-
-
