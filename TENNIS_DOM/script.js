@@ -14,14 +14,14 @@ wrap.appendChild(btn);
 wrap.appendChild(score);
 wrap.appendChild(court);
 
-let timer = 0;
 const width = 400;
 const height = 200;
 const ballSize = 20;
 let ballX;
 let ballY;
-let ballSpeedX = 2;
-let ballSpeedY;
+let ballSpeedX = 0;
+let ballSpeedY = 0;
+let ballDirectionX = 0;
 const racquetWidth = 10;
 const racquetHeight = 60;
 let racquetLY;
@@ -30,6 +30,7 @@ let racquetSpeedL = 0;
 let racquetSpeedR = 0;
 let countL = 0;
 let countR = 0;
+let scoreСhange;
 
 body[0].style.cssText = `display: flex; justify-content: center;`;
 btn.innerText = `старт!`;
@@ -55,6 +56,11 @@ racquetR.style.position = `absolute`;
 
 body[0].appendChild(wrap);
 
+requestAnimationFrame(tick);
+btn.addEventListener('click', start);
+window.addEventListener('keydown', increaseSpeed);
+window.addEventListener('keyup', decreaseSpeed);
+
 function preload() {
     ballX = width / 2 - ballSize / 2;
     ballY = height / 2 - ballSize / 2;
@@ -69,18 +75,13 @@ function preload() {
 
 preload();
 
-btn.addEventListener('click', start);
-window.addEventListener('keydown', increaseSpeed);
-window.addEventListener('keyup', decreaseSpeed);
-
 function start() {
-    if(!(timer)) {
-        ballSpeedY = Math.random() * ((Math.random() < 0.5) ? -1 : 1);
-        ballSpeedX *= ((Math.random() < 0.5) ? -1 : 1);
+    ballSpeedY = Math.random() * ((Math.random() < 0.5) ? -1 : 1);
+    ballDirectionX = ((Math.random() < 0.5) ? -1 : 1);
+    ballSpeedX = 2 * ballDirectionX;
+    scoreСhange = true;
     
-        preload();
-        timer = requestAnimationFrame(tick);
-    }
+    preload();
 }
 
 function tick() {
@@ -100,13 +101,11 @@ function tick() {
     if(ballX <= 0) {
         ballX = 0;
         ballSpeedY = 0;
-        countR += 1;
     }
     
     if(ballX + ballSize >= width) {
         ballX = width - ballSize;
         ballSpeedY = 0;
-        countL += 1;
     }
 
     if(ballY < 0) {
@@ -124,7 +123,6 @@ function tick() {
 
     if ( ballX === 0 || ballX === width - ballSize) {
         stop();
-        return
     }
 
     if (racquetLY + racquetHeight > height) {
@@ -180,9 +178,18 @@ function decreaseSpeed(event) {
 }
 
 function stop() {
+    if(scoreСhange === true) {
+        if(ballX === 0) {
+            countR += 1;
+            scoreСhange = false;
+        }
+
+        if(ballX === width - ballSize) {
+            countL += 1;
+            scoreСhange = false;
+        }
+    }
     score.innerText = `${countL} : ${countR}`;
-    cancelAnimationFrame(timer);
-    timer = 0;
     racquetSpeedL = 0;
     racquetSpeedR = 0;
 }

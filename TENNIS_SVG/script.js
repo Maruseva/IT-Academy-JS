@@ -1,9 +1,9 @@
 const svgns = "http://www.w3.org/2000/svg";
-let timer = 0;
 const width = 400;
 const height = 200;
 const widthBtn = 70;
 const heightBtn = 20;
+let scoreСhange;
 let countL = 0;
 let countR = 0;
 const racquetWidth = 10;
@@ -15,8 +15,9 @@ let racquetSpeedR = 0;
 const ballSize = 10;
 let ballX;
 let ballY;
-let ballSpeedX = 2;
-let ballSpeedY;
+let ballSpeedX = 0;
+let ballSpeedY = 0;
+let ballDirectionX = 0;
 
 const body = document.getElementsByTagName('body');
 body[0].style.cssText = `display: flex; justify-content: center;`;
@@ -80,6 +81,11 @@ ball.setAttribute ('fill', 'red');
 
 body[0].appendChild(svg);
 
+requestAnimationFrame(tick);
+g.addEventListener ('click', start);
+window.addEventListener('keydown', increaseSpeed);
+window.addEventListener('keyup', decreaseSpeed);
+
 function preload() {
     ballX = width / 2;
     ballY = height / 2 + heightBtn + 10;
@@ -95,18 +101,13 @@ function preload() {
 
 preload();
 
-g.addEventListener ('click', start);
-window.addEventListener('keydown', increaseSpeed);
-window.addEventListener('keyup', decreaseSpeed);
-
 function start() {
-    if(!(timer)) {
-        ballSpeedY = Math.random() * ((Math.random() < 0.5) ? -1 : 1);
-        ballSpeedX *= ((Math.random() < 0.5) ? -1 : 1);
+    ballSpeedY = Math.random() * ((Math.random() < 0.5) ? -1 : 1);
+    ballDirectionX = ((Math.random() < 0.5) ? -1 : 1);
+    ballSpeedX = 2 * ballDirectionX;
+    scoreСhange = true;
     
-        preload();
-        timer = requestAnimationFrame(tick);
-    }
+    preload();
 }
 
 function tick() {
@@ -126,13 +127,11 @@ function tick() {
     if(ballX - ballSize <= 0) {
         ballX = ballSize;
         ballSpeedY = 0;
-        countR += 1;
     }
     
     if(ballX + ballSize >= width) {
         ballX = width - ballSize;
         ballSpeedY = 0;
-        countL += 1;
     }
 
     if(ballY - ballSize < heightBtn + 10) {
@@ -150,7 +149,6 @@ function tick() {
 
     if ( ballX === ballSize || ballX === width - ballSize) {
         stop();
-        return
     }
 
     if (racquetLY + racquetHeight > height + heightBtn + 10) {
@@ -173,7 +171,8 @@ function tick() {
     racquetL.setAttribute ('y', `${racquetLY}`);
     racquetRY += racquetSpeedR;
     racquetR.setAttribute ('y', `${racquetRY}`);
-    console.log(racquetLY)
+    console.log(racquetLY);
+
     requestAnimationFrame(tick);
 }
 
@@ -206,9 +205,18 @@ function decreaseSpeed(event) {
 }
 
 function stop() {
+    if(scoreСhange === true) {
+        if(ballX === ballSize) {
+            countR += 1;
+            scoreСhange = false;
+        }
+
+        if(ballX === width - ballSize) {
+            countL += 1;
+            scoreСhange = false;
+        }
+    }
     score.textContent = `${countL} : ${countR}`;
-    cancelAnimationFrame(timer);
-    timer = 0;
     racquetSpeedL = 0;
     racquetSpeedR = 0;
 }
