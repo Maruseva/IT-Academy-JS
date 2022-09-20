@@ -21,14 +21,20 @@ let ballDirectionX = 0;
 const body = document.getElementsByTagName('body');
 body[0].style.cssText = `display: flex; justify-content: center;`;
 
+const canvas = document.createElement('canvas');
+canvas.width = `${width}`;
+canvas.height = `${height + heightBtn + 10}`;
+body[0].appendChild(canvas);
+
 const btn = document.createElement('button');
 body[0].appendChild(btn);
 btn.innerText = `старт!`;
 btn.style.width = `${widthBtn}px`;
 btn.style.height = `${heightBtn}px`;
 btn.style.position = 'absolute';
+btn.style.left = `${canvas.offsetLeft}px`;
 
-// requestAnimationFrame(tick);
+requestAnimationFrame(tick);
 btn.addEventListener('click', start);
 window.addEventListener('keydown', increaseSpeed);
 window.addEventListener('keyup', decreaseSpeed);
@@ -38,8 +44,6 @@ function preload() {
     racquetRY = height/2 + heightBtn+10 - racquetHeight/2;
     ballX = width / 2;
     ballY = height/2 + heightBtn+10;
-
-    tick()
 }
 
 preload();
@@ -51,54 +55,49 @@ function start() {
     scoreСhange = true;
     
     preload();
-    tick()
 }
 
 function tick() {
     ballX += ballSpeedX;
     ballY += ballSpeedY;
     
-    const canvas = document.createElement('canvas');
-    canvas.width = `${width}`;
-    canvas.height = `${height + heightBtn + 10}`;
-    body[0].appendChild(canvas);
     const context = canvas.getContext('2d');
 
-    btn.style.left = `${canvas.offsetLeft}px`;
-
-    context.save();
+    // context.save();
     context.beginPath();
     context.fillStyle='#dfdf53';
     context.fillRect(0, heightBtn+10 , width, height);
-    context.restore();
+    context.strokeStyle='black';
+    context.strokeRect(0, heightBtn+10 , width, height);
+    // context.restore();
 
-    context.save();
+    // context.save();
     context.beginPath();
     context.fillStyle = 'black';
     context.font = `normal 35px Arial`;
     context.textAlign = `center`;
     context.textBaseline = `top`;
     context.fillText (`${countL} : ${countR}`, `${width/2}`, 0);
-    context.restore();
+    // context.restore();
 
-    context.save();
+    // context.save();
     context.beginPath();
     context.fillStyle='green';
     context.fillRect(0, racquetLY, racquetWidth, racquetHeight);
-    context.restore();
+    // context.restore();
 
-    context.save();
+    // context.save();
     context.beginPath();
     context.fillStyle='blue';
     context.fillRect(width - racquetWidth, racquetRY, racquetWidth, racquetHeight);
-    context.restore();
+    // context.restore();
 
-    context.save();
+    // context.save();
     context.beginPath();
     context.fillStyle='red';
     context.arc(ballX, ballY, ballSize, 0, 360, false);
     context.fill();
-    context.restore();
+    // context.restore();
 
     if(ballX - ballSize < racquetWidth && ballY - ballSize < racquetLY+racquetHeight && ballY+ballSize > racquetLY) {
         ballSpeedX = -ballSpeedX;
@@ -151,15 +150,25 @@ function tick() {
     }
 
     racquetLY += racquetSpeedL;
-    // context.beginPath();
-    // context.fillStyle='green';
-    // context.fillRect(0, racquetLY, racquetWidth, racquetHeight);
     racquetRY += racquetSpeedR;
-    // context.beginPath();
-    // context.fillStyle='blue';
-    // context.fillRect(width - racquetWidth, racquetRY, racquetWidth, racquetHeight);
 
-    // requestAnimationFrame(tick);
+    function stop() {
+        if(scoreСhange === true) {
+            if(ballX === ballSize) {
+                countR += 1;
+                scoreСhange = false;
+            }
+    
+            if(ballX === width - ballSize) {
+                countL += 1;
+                scoreСhange = false;
+            }
+        }
+        racquetSpeedL = 0;
+        racquetSpeedR = 0;
+    }
+
+    requestAnimationFrame(tick);
 }
 
 function increaseSpeed(event) {
@@ -189,25 +198,3 @@ function decreaseSpeed(event) {
         racquetSpeedR = 0;
     } 
 }
-
-function stop() {
-    if(scoreСhange === true) {
-        if(ballX === ballSize) {
-            countR += 1;
-            scoreСhange = false;
-        }
-
-        if(ballX === width - ballSize) {
-            countL += 1;
-            scoreСhange = false;
-        }
-    }
-    score.textContent = `${countL} : ${countR}`;
-    racquetSpeedL = 0;
-    racquetSpeedR = 0;
-}
-
-
-
-
-
