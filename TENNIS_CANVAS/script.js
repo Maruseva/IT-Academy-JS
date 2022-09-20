@@ -58,46 +58,11 @@ function start() {
 }
 
 function tick() {
+    const context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
     ballX += ballSpeedX;
     ballY += ballSpeedY;
-    
-    const context = canvas.getContext('2d');
-
-    // context.save();
-    context.beginPath();
-    context.fillStyle='#dfdf53';
-    context.fillRect(0, heightBtn+10 , width, height);
-    context.strokeStyle='black';
-    context.strokeRect(0, heightBtn+10 , width, height);
-    // context.restore();
-
-    // context.save();
-    context.beginPath();
-    context.fillStyle = 'black';
-    context.font = `normal 35px Arial`;
-    context.textAlign = `center`;
-    context.textBaseline = `top`;
-    context.fillText (`${countL} : ${countR}`, `${width/2}`, 0);
-    // context.restore();
-
-    // context.save();
-    context.beginPath();
-    context.fillStyle='green';
-    context.fillRect(0, racquetLY, racquetWidth, racquetHeight);
-    // context.restore();
-
-    // context.save();
-    context.beginPath();
-    context.fillStyle='blue';
-    context.fillRect(width - racquetWidth, racquetRY, racquetWidth, racquetHeight);
-    // context.restore();
-
-    // context.save();
-    context.beginPath();
-    context.fillStyle='red';
-    context.arc(ballX, ballY, ballSize, 0, 360, false);
-    context.fill();
-    // context.restore();
 
     if(ballX - ballSize < racquetWidth && ballY - ballSize < racquetLY+racquetHeight && ballY+ballSize > racquetLY) {
         ballSpeedX = -ballSpeedX;
@@ -167,6 +132,32 @@ function tick() {
         racquetSpeedL = 0;
         racquetSpeedR = 0;
     }
+
+    context.beginPath();
+    context.fillStyle='#dfdf53';
+    context.fillRect(0, heightBtn+10 , width, height);
+    context.strokeStyle='black';
+    context.strokeRect(0, heightBtn+10 , width, height);
+   
+    context.beginPath();
+    context.fillStyle = 'black';
+    context.font = `normal 35px Arial`;
+    context.textAlign = `center`;
+    context.textBaseline = `top`;
+    context.fillText (`${countL} : ${countR}`, `${width/2}`, 0);
+    
+    context.beginPath();
+    context.fillStyle='green';
+    context.fillRect(0, racquetLY, racquetWidth, racquetHeight);
+    
+    context.beginPath();
+    context.fillStyle='blue';
+    context.fillRect(width - racquetWidth, racquetRY, racquetWidth, racquetHeight);
+    
+    context.beginPath();
+    context.fillStyle='red';
+    context.arc(ballX, ballY, ballSize, 0, 360, false);
+    context.fill();
 
     requestAnimationFrame(tick);
 }
