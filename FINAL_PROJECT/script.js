@@ -44,9 +44,10 @@ const elementsOnSprite = [
     {x: 644, y: 0},
     {x: 644, y: 322},
     {x: 644, y: 644},];
+const minCount = 3;
 let x = windowInnerWidth / 2 - board.w * board.itemsX / 2;
 let y = windowInnerHeight / 2 - board.h * board.itemsY / 2;
-
+// debugger
 function drawBoard() {
     for (let i = 0; i < board.itemsX; i++) {
         board.cells[i] = [];
@@ -54,7 +55,7 @@ function drawBoard() {
             let e = Math.floor (1 + Math.random() * (6 + 1 - 1));
             board.cells[i][j] = {numberPicture: e, x: x, y: y};
             game.setCell(board.color, x, y, board.w, board.h);
-            context.drawImage(img[1], elementsOnSprite[e].x, elementsOnSprite[e].y, 322, 322, x, y, 50, 50);
+            context.drawImage(img[1], elementsOnSprite[e].x, elementsOnSprite[e].y, 322, 322, x, y, board.w, board.h);
             x += Number(board.w);
         }
         x = windowInnerWidth / 2 - board.w * board.itemsX / 2;
@@ -62,19 +63,60 @@ function drawBoard() {
     }
 
     for(let i = 0; i < (board.cells.length); i++) {
-        // debugger
-        for(let j = 1; j < (board.cells[i].length-1); j++) {
-            if(board.cells[i][j].numberPicture === board.cells[i][j-1].numberPicture && board.cells[i][j].numberPicture === board.cells[i][j+1].numberPicture) {
+        for(let j = 0; j < board.cells[i].length; j++) {
+            for(let n = j + 1; n < board.cells[i].length; n++) {
+                if(board.cells[i][j].numberPicture !== board.cells[i][n].numberPicture){
+                    if(n - j >= minCount) {
+                        updatNumberPictureHorizontal(i, j, n);
+                    }
+                    j = n-1;
+                    break
+                }
+                if((board.cells[i][j].numberPicture === board.cells[i][n].numberPicture) && (n === board.cells[i].length - 1)){
+                    if(n + 1 - j >= minCount) {
+                        updatNumberPictureHorizontal(i, j, n+1);
+                    }
+                }
+            }    
+        }
+    }
+    // debugger
+    for(let i = 0; i < (board.cells.length); i++) {
+        for(let j = 0; j < board.cells[i].length; j++) {
+            for(let n = i + 1; n < board.cells.length; n++) {
+                if(board.cells[i][j].numberPicture !== board.cells[n][j].numberPicture){
+                    if(n - i >= minCount) {
+                        updatNumberPictureVertical(i, n, j);
+                    }
+                    i = n;
+                }
+                if((board.cells[i][j].numberPicture === board.cells[n][j].numberPicture) && (n === board.cells.length - 1)){
+                    if(n + 1 - i >= minCount) {
+                        updatNumberPictureVertical(i, n+1, j);
+                    }
+                }
+            }    
+        }
+    }
+}
+
+function updatNumberPictureHorizontal(numArrey, startIndex, endIndex) {
+    for(let i = 0; i < (board.cells.length); i++) {
+        if(i === numArrey) {
+            for(let j = startIndex; j < endIndex; j++) {
                 board.cells[i][j].numberPicture = null;
-                board.cells[i][j-1].numberPicture = null;
-                board.cells[i][j+1].numberPicture = null;
-            }
-            if(board.cells[i][j].numberPicture === board.cells[i-1][j].numberPicture && board.cells[i][j].numberPicture === board.cells[i+1][j].numberPicture) {
-                board.cells[i][j].numberPicture = null;
-                board.cells[i-1][j].numberPicture = null;
-                board.cells[i+1][j].numberPicture = null;
             }
         }
+    }
+}
+
+function updatNumberPictureVertical(startNumArrey, endNumArrey, index) {
+    for(let i = 0; i < (board.cells.length); i++) {
+        for(let j = 0; j < board.cells[i].length; j++) {
+            if((i >= startNumArrey && i < endNumArrey) && (j === index)) {
+                board.cells[i][j].numberPicture = null;
+            }
+        }  
     }
 }
 console.log(board.cells)
