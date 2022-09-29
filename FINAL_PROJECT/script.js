@@ -38,7 +38,6 @@ const game = new Game(context, img[0]);
 window.addEventListener('load', () => {
     game.start();
     });
-
 const board = {color: 'rgba(255, 255, 255, 0.2)', w: '50', h: '50', itemsX: 9, itemsY: 9, cells: []};
 const elementsOnSprite = [
     {x: 322, y: 322},
@@ -88,7 +87,9 @@ function drawBoard() {
                 removeMatchingPictures (board.cells[i][j]);
             } else {
                 const numberPicture = board.cells[i][j].numberPicture;
-                context.drawImage(img[1], elementsOnSprite[numberPicture].x, elementsOnSprite[numberPicture].y, 322, 322, x, y, board.w, board.h);
+                const xPicture = board.cells[i][j].x;
+                const yPicture = board.cells[i][j].y;
+                context.drawImage(img[1], elementsOnSprite[numberPicture].x, elementsOnSprite[numberPicture].y, 322, 322, xPicture, yPicture, board.w, board.h);
             } 
             x += Number(board.w);
         }
@@ -158,31 +159,71 @@ function addVerticalMatch(startNumArrey, endNumArrey, index) {
     }
 }
 
-    let count = 0;
-
-    let numSprite = 0;
-
-
 function removeMatchingPictures (obj) {
-    // if(!(obj.count)) {
-    //     obj.count = 0;
-    // }
-    // if(!(obj.numSprite)) {
-    //     obj.numSprite = 0;
-    // }
-    // debugger
-    if((count < 2) && (numSprite === 0)) {
-        context.drawImage(img[1], elementsOnSprite[obj.numberPicture].x, elementsOnSprite[obj.numberPicture].y, 322, 322, obj.x, obj.y, board.w, board.h);
-        count = count + 1;
-    } else if ((count >= 2) && (numSprite < 20)) {
-        context.drawImage(img[2], spriteMatch[numSprite].x, spriteMatch[numSprite].y, 256, 256, obj.x, obj.y, board.w, board.h);
-        count = count + 1;
-    } else if (count === 60) {
-        count = 30;
-        numSprite = numSprite + 1;
+    if(!(obj.count)) {
+        obj.count = 0;
+    }
+    if(!(obj.numSprite)) {
+        obj.numSprite = 0;
+    }
+    if(!(obj.opacity)) {
+        obj.opacity = 1;
+    }
+    const count_step = 3;
+
+    if(obj.count < count_step && obj.numSprite < spriteMatch.length) {
+        if (obj.opacity > 0) {
+            context.save();
+            context.globalAlpha = obj.opacity;
+            context.drawImage(img[1], elementsOnSprite[obj.numberPicture].x, elementsOnSprite[obj.numberPicture].y, 322, 322, obj.x, obj.y, board.w, board.h);
+            context.restore();
+        }
+        context.drawImage(img[2], spriteMatch[obj.numSprite].x, spriteMatch[obj.numSprite].y, 256, 256, obj.x, obj.y, board.w, board.h);
+        obj.count = obj.count + 1;
+    } else {
+        movePictures();
+    }
+    if (obj.count === count_step) {
+        obj.count = 0;
+        obj.numSprite = obj.numSprite + 1;
+        obj.opacity -= 0.1;
     } 
 }
 
+function movePictures() {
+    board.cells[0].forEach(el => {
+        // debugger
+        if ('match' in el) {
+            let e = Math.floor (1 + Math.random() * (6 + 1 - 1));
+            context.drawImage(img[1], elementsOnSprite[e].x, elementsOnSprite[e].y, 322, 322, el.x, el.y, board.w, board.h);
+            el.numberPicture = e;
+            delete el.match;
+            delete el.count;
+            delete el.numSprite;
+            delete el.opacity;
+        }
+    });
+
+    board.cells.forEach((str, i) => {
+        str.forEach((col, j) => {
+            if(i <  board.cells.length - 1 && 'match' in board.cells[i+1][j]) {
+                board.cells[i][j].y += 2;
+                if (board.cells[i][j].y >= board.cells[i+1][j].y) {
+                    board.cells[i][j].y = board.cells[i+1][j].y;
+                }
+                // board.cells[i+1][j].numberPicture = board.cells[i][j].numberPicture;
+                // delete board.cells[i+1][j].match;
+                // delete board.cells[i+1][j].count;
+                // delete board.cells[i+1][j].numSprite;
+                // delete board.cells[i+1][j].opacity;
+                // board.cells[i][j].match = true;
+                // board.cells[i][j].numberPicture = p;
+            }
+        });
+    });
+}
+
+console.log(board.cells)
 
 
 
