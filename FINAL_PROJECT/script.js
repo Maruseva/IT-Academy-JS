@@ -4,6 +4,7 @@ class Game {
     constructor(ctx, img) {
         this.ctx = ctx;
         this.backgroundImage = img;
+        this.gameState = 0; /* 0 - выстраивается игровое поле, 1 - поиск совпадений; 2 - удаление картинок, 3 - смещение картинок */
     }
 
     setBackground() {
@@ -21,7 +22,17 @@ class Game {
     start(){
         this.setBackground();
         drawBoard();
-        checkMatch();
+        if(this.gameState === 1) {
+            checkMatch();
+        }
+        if(this.gameState === 2) {
+            removeMatchingPictures ()
+        }
+        if(this.gameState === 3) {
+            movePictures()
+        }
+         
+        
         requestAnimationFrame(this.start.bind(this));
     }  
 }
@@ -71,6 +82,7 @@ const spriteMatch = [
 ];
 
 function drawBoard() {
+    game.gameState = 1;
     let x = windowInnerWidth / 2 - board.w * board.itemsX / 2;
     let y = windowInnerHeight / 2 - board.h * board.itemsY / 2;
     for (let i = 0; i < board.itemsX; i++) {
@@ -80,11 +92,11 @@ function drawBoard() {
         for (let j = 0; j < board.itemsY; j++) {
             if(!(board.cells[i][j])) {
                 let e = Math.floor (1 + Math.random() * (6 + 1 - 1));
-                board.cells[i][j] = {numberPicture: e, x: x, y: y};
+                board.cells[i][j] = {numberPicture: e, x: x, y: y, initialY: y};
             }
             game.setCell(board.color, x, y, board.w, board.h);
             if(board.cells[i][j].match) {
-                removeMatchingPictures (board.cells[i][j]);
+                game.gameState = 2;
             } else {
                 const numberPicture = board.cells[i][j].numberPicture;
                 const xPicture = board.cells[i][j].x;
@@ -159,40 +171,48 @@ function addVerticalMatch(startNumArrey, endNumArrey, index) {
     }
 }
 
-function removeMatchingPictures (obj) {
-    if(!(obj.count)) {
-        obj.count = 0;
-    }
-    if(!(obj.numSprite)) {
-        obj.numSprite = 0;
-    }
-    if(!(obj.opacity)) {
-        obj.opacity = 1;
-    }
-    const count_step = 3;
-
-    if(obj.count < count_step && obj.numSprite < spriteMatch.length) {
-        if (obj.opacity > 0) {
-            context.save();
-            context.globalAlpha = obj.opacity;
-            context.drawImage(img[1], elementsOnSprite[obj.numberPicture].x, elementsOnSprite[obj.numberPicture].y, 322, 322, obj.x, obj.y, board.w, board.h);
-            context.restore();
+function removeMatchingPictures () {
+    for(let i = 0; i < (board.cells.length); i++) {
+        for(let j = 0; j < board.cells[i].length; j++) {
+            if('match' in board.cells[i][j]) {
+               const obj = board.cells[i][j];
+               const count_step = 3;
+   
+               if(!(obj.count)) {
+                   obj.count = 0;
+               }
+               if(!(obj.numSprite)) {
+                   obj.numSprite = 0;
+               }
+               if(!(obj.opacity)) {
+                   obj.opacity = 1;
+               }
+           
+               if(obj.count < count_step && obj.numSprite < spriteMatch.length) {
+                   if (obj.opacity > 0) {
+                       context.save();
+                       context.globalAlpha = obj.opacity;
+                       context.drawImage(img[1], elementsOnSprite[obj.numberPicture].x, elementsOnSprite[obj.numberPicture].y, 322, 322, obj.x, obj.y, board.w, board.h);
+                       context.restore();
+                   }
+                   context.drawImage(img[2], spriteMatch[obj.numSprite].x, spriteMatch[obj.numSprite].y, 256, 256, obj.x, obj.y, board.w, board.h);
+                   obj.count = obj.count + 1;
+               } else {
+                   game.gameState = 3;
+               }
+               if (obj.count === count_step) {
+                   obj.count = 0;
+                   obj.numSprite = obj.numSprite + 1;
+                   obj.opacity -= 0.1;
+               }
+            } 
         }
-        context.drawImage(img[2], spriteMatch[obj.numSprite].x, spriteMatch[obj.numSprite].y, 256, 256, obj.x, obj.y, board.w, board.h);
-        obj.count = obj.count + 1;
-    } else {
-        movePictures();
     }
-    if (obj.count === count_step) {
-        obj.count = 0;
-        obj.numSprite = obj.numSprite + 1;
-        obj.opacity -= 0.1;
-    } 
 }
 
 function movePictures() {
     board.cells[0].forEach(el => {
-        // debugger
+        
         if ('match' in el) {
             let e = Math.floor (1 + Math.random() * (6 + 1 - 1));
             context.drawImage(img[1], elementsOnSprite[e].x, elementsOnSprite[e].y, 322, 322, el.x, el.y, board.w, board.h);
@@ -203,25 +223,46 @@ function movePictures() {
             delete el.opacity;
         }
     });
-
     board.cells.forEach((str, i) => {
         str.forEach((col, j) => {
-            if(i <  board.cells.length - 1 && 'match' in board.cells[i+1][j]) {
+            if(i <  board.cells.length - 1 && 'match' in board.cells[i+1][j] && !('match' in board.cells[i][j])) {
+               
+                const currentObject = board.cells[i][j];
+                const nextObject = board.cells[i+1][j];
                 board.cells[i][j].y += 2;
                 if (board.cells[i][j].y >= board.cells[i+1][j].y) {
                     board.cells[i][j].y = board.cells[i+1][j].y;
+                    // debugger
+                    board.cells[i][j] = nextObject;
+                    board.cells[i][j].y = currentObject.initialY;
+                    board.cells[i][j].initialY = currentObject.initialY;
+                    board.cells[i+1][j] = currentObject;
+                    board.cells[i+1][j].y = nextObject.initialY;
+                    board.cells[i+1][j].initialY = nextObject.initialY;
                 }
-                // board.cells[i+1][j].numberPicture = board.cells[i][j].numberPicture;
+                //  console.log(nextObject.y)
+                
+
+                
+
+
+                // board.cells[i][j] = board.cells[i+1][j];
+                // board.cells[i][j].y = board.cells[i][j].initialY;
                 // delete board.cells[i+1][j].match;
+                // board.cells[i+1][j].numberPicture = board.cells[i][j].numberPicture;
+                
                 // delete board.cells[i+1][j].count;
                 // delete board.cells[i+1][j].numSprite;
                 // delete board.cells[i+1][j].opacity;
-                // board.cells[i][j].match = true;
+               
                 // board.cells[i][j].numberPicture = p;
             }
         });
     });
+
+    
 }
+
 
 console.log(board.cells)
 
