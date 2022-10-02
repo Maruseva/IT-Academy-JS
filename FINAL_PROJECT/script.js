@@ -4,7 +4,7 @@ class Game {
     constructor(ctx, img) {
         this.ctx = ctx;
         this.backgroundImage = img;
-        this.gameState = 0; /* 0 - выстраивается игровое поле, 1 - поиск совпадений; 2 - удаление картинок, 3 - смещение картинок */
+        this.gameState = 0; /* 0 - выстраивается игровое поле, 1 - поиск совпадений; 2 - удаление картинок, 3 - смещение картинок, 4 - перетягивание картинок */
     }
 
     setBackground() {
@@ -31,8 +31,6 @@ class Game {
         if(this.gameState === 3) {
             movePictures()
         }
-         
-        
         requestAnimationFrame(this.start.bind(this));
     }  
 }
@@ -43,12 +41,15 @@ const canvas = document.getElementById('canvas');
 canvas.setAttribute('width', `${windowInnerWidth}`);
 canvas.setAttribute('height', `${windowInnerHeight}`);
 const context = canvas.getContext('2d');
-const img = document.getElementsByTagName('img');
+const img = document.getElementsByTagName('img'); 
 
 const game = new Game(context, img[0]);
 window.addEventListener('load', () => {
     game.start();
     });
+
+document.addEventListener('pointerdown', pointerdownPicture);
+
 const board = {color: 'rgba(255, 255, 255, 0.2)', w: '50', h: '50', itemsX: 9, itemsY: 9, cells: []};
 const elementsOnSprite = [
     {x: 322, y: 322},
@@ -92,7 +93,7 @@ function drawBoard() {
         for (let j = 0; j < board.itemsY; j++) {
             if(!(board.cells[i][j])) {
                 let e = Math.floor (1 + Math.random() * (6 + 1 - 1));
-                board.cells[i][j] = {numberPicture: e, x: x, y: y, initialY: y};
+                board.cells[i][j] = {numberPicture: e, x: x, y: y, initialY: y, initialX: x};
             }
             game.setCell(board.color, x, y, board.w, board.h);
             if(board.cells[i][j].match) {
@@ -212,7 +213,6 @@ function removeMatchingPictures () {
 
 function movePictures() {
     board.cells[0].forEach(el => {
-        
         if ('match' in el) {
             let e = Math.floor (1 + Math.random() * (6 + 1 - 1));
             context.drawImage(img[1], elementsOnSprite[e].x, elementsOnSprite[e].y, 322, 322, el.x, el.y, board.w, board.h);
@@ -226,42 +226,68 @@ function movePictures() {
     board.cells.forEach((str, i) => {
         str.forEach((col, j) => {
             if(i <  board.cells.length - 1 && 'match' in board.cells[i+1][j] && !('match' in board.cells[i][j])) {
-               
                 const currentObject = board.cells[i][j];
                 const nextObject = board.cells[i+1][j];
-                board.cells[i][j].y += 2;
+                board.cells[i][j].y += 5;
                 if (board.cells[i][j].y >= board.cells[i+1][j].y) {
                     board.cells[i][j].y = board.cells[i+1][j].y;
-                    // debugger
-                    board.cells[i][j] = nextObject;
+                    board.cells[i][j] = {...nextObject};
                     board.cells[i][j].y = currentObject.initialY;
                     board.cells[i][j].initialY = currentObject.initialY;
-                    board.cells[i+1][j] = currentObject;
+                    board.cells[i+1][j] = {...currentObject};
                     board.cells[i+1][j].y = nextObject.initialY;
                     board.cells[i+1][j].initialY = nextObject.initialY;
                 }
-                //  console.log(nextObject.y)
-                
-
-                
-
-
-                // board.cells[i][j] = board.cells[i+1][j];
-                // board.cells[i][j].y = board.cells[i][j].initialY;
-                // delete board.cells[i+1][j].match;
-                // board.cells[i+1][j].numberPicture = board.cells[i][j].numberPicture;
-                
-                // delete board.cells[i+1][j].count;
-                // delete board.cells[i+1][j].numSprite;
-                // delete board.cells[i+1][j].opacity;
-               
-                // board.cells[i][j].numberPicture = p;
             }
         });
-    });
-
-    
+    }); 
+    console.log(game.gameState)
 }
+
+function pointerdownPicture (event) {
+    let picture;
+
+    for(let i = 0; i < (board.cells.length); i++) {
+        for(let j = 0; j < board.cells[i].length; j++) {
+            if(board.cells[i][j].x < event.offsetX && board.cells[i][j].y < event.offsetY && 
+            event.offsetX - board.cells[i][j].x < board.w && event.offsetY - board.cells[i][j].y < board.h) {
+                
+                picture = board.cells[i][j];
+            }
+        }
+    }
+   
+    document.addEventListener("pointermove", pointermovePicture);
+    document.addEventListener("pointerup", pointerupPicture);
+    
+    function pointermovePicture(event) { 
+        picture.x = event.offsetX - picture.x;
+        picture.y = event.offsetY - picture.y;
+
+
+        console.log(picture) 
+    }
+    function pointerupPicture(event) {
+        let changePicture;
+        for(let i = 0; i < (board.cells.length); i++) {
+            for(let j = 0; j < board.cells[i].length; j++) {
+                if(board.cells[i][j].x < event.offsetX && board.cells[i][j].y < event.offsetY && 
+                event.offsetX - board.cells[i][j].x < board.w && event.offsetY - board.cells[i][j].y < board.h) {
+                    
+                    changePicture = board.cells[i][j];
+                }
+            }
+        }
+        console.log(picture)
+        if (Math.abs(picture.initialX - changePicture.x) !== board.w && Math.abs(picture.initialY - changePicture.y) !== board.h) {
+            picture.x = picture.initialX;
+            picture.y = picture.initialY;
+        }
+        document.removeEventListener("pointermove", pointermovePicture);
+        document.removeEventListener("pointerup", pointerupPicture); 
+    }
+}
+
 
 
 console.log(board.cells)
