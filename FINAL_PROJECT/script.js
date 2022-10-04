@@ -82,10 +82,13 @@ const spriteMatch = [
     {x: 768, y: 1024},
 ];
 
+let startBoardX = windowInnerWidth / 2 - board.w * board.itemsX / 2;
+let startBoardY = windowInnerHeight / 2 - board.h * board.itemsY / 2;
+
 function drawBoard() {
     game.gameState = 1;
-    let x = windowInnerWidth / 2 - board.w * board.itemsX / 2;
-    let y = windowInnerHeight / 2 - board.h * board.itemsY / 2;
+    let x = startBoardX;
+    let y = startBoardY;
     for (let i = 0; i < board.itemsX; i++) {
         if(!(board.cells[i])) {
             board.cells[i] = [];
@@ -112,6 +115,7 @@ function drawBoard() {
 }
 
 function checkMatch() {
+    game.gameState = 4;
     const minCount = 3;
 
     for(let row = 0; row < (board.cells.length); row++) {
@@ -122,12 +126,14 @@ function checkMatch() {
                 if(currentPicture !== nextPicture){
                     if(nextColumn - column >= minCount) {
                         addHorizontalMatch(row, column, nextColumn);
+                        game.gameState = 2;
                     }
                     column = nextColumn - 1;
                     break
                 }
                 if((nextColumn + 1 - column >= minCount) && (nextColumn === board.cells[row].length - 1)){
                     addHorizontalMatch(row, column, nextColumn + 1);
+                    game.gameState = 2;
                 }
             }    
         }
@@ -140,12 +146,14 @@ function checkMatch() {
                 if(currentPicture !== nextPicture){
                     if(nextRow - row >= minCount) {
                         addVerticalMatch(row, nextRow, column);
+                        game.gameState = 2;
                     }
                     row = nextRow - 1;
                     break;
                 }
                 if((nextRow + 1 - row >= minCount) && (nextRow === board.cells.length - 1)){
                     addVerticalMatch(row, nextRow + 1, column);
+                    game.gameState = 2;
                 }
             }    
         }
@@ -228,7 +236,7 @@ function movePictures() {
             if(i <  board.cells.length - 1 && 'match' in board.cells[i+1][j] && !('match' in board.cells[i][j])) {
                 const currentObject = board.cells[i][j];
                 const nextObject = board.cells[i+1][j];
-                board.cells[i][j].y += 5;
+                board.cells[i][j].y += 7;
                 if (board.cells[i][j].y >= board.cells[i+1][j].y) {
                     board.cells[i][j].y = board.cells[i+1][j].y;
                     board.cells[i][j] = {...nextObject};
@@ -241,56 +249,97 @@ function movePictures() {
             }
         });
     }); 
-    console.log(game.gameState)
 }
 
 function pointerdownPicture (event) {
-    let picture;
-
-    for(let i = 0; i < (board.cells.length); i++) {
-        for(let j = 0; j < board.cells[i].length; j++) {
-            if(board.cells[i][j].x < event.offsetX && board.cells[i][j].y < event.offsetY && 
-            event.offsetX - board.cells[i][j].x < board.w && event.offsetY - board.cells[i][j].y < board.h) {
-                
-                picture = board.cells[i][j];
-            }
-        }
+    if ((event.offsetX < startBoardX) || (event.offsetX > startBoardX + board.w * board.itemsX) ||
+    (event.offsetY < startBoardY) || (event.offsetY > startBoardY + board.h * board.itemsY)) {
+        return;
     }
-   
-    document.addEventListener("pointermove", pointermovePicture);
-    document.addEventListener("pointerup", pointerupPicture);
     
-    function pointermovePicture(event) { 
-        picture.x = event.offsetX - picture.x;
-        picture.y = event.offsetY - picture.y;
+    if (game.gameState === 4) {
+        let picture;
+        let indexX;
+        let indexY;
 
-
-        console.log(picture) 
-    }
-    function pointerupPicture(event) {
-        let changePicture;
         for(let i = 0; i < (board.cells.length); i++) {
             for(let j = 0; j < board.cells[i].length; j++) {
                 if(board.cells[i][j].x < event.offsetX && board.cells[i][j].y < event.offsetY && 
                 event.offsetX - board.cells[i][j].x < board.w && event.offsetY - board.cells[i][j].y < board.h) {
                     
-                    changePicture = board.cells[i][j];
+                    picture = board.cells[i][j];
+                    indexY = i;
+                    indexX = j;
                 }
             }
         }
-        console.log(picture)
-        if (Math.abs(picture.initialX - changePicture.x) !== board.w && Math.abs(picture.initialY - changePicture.y) !== board.h) {
+        
+        const clikcX = event.offsetX;
+        const clikcY = event.offsetY;
+        const shiftLeft = clikcX - picture.initialX;
+        const shiftTop = clikcY - picture.initialY;
+        const pictureNumber = picture.numberPicture;
+    
+        document.addEventListener("pointermove", pointermovePicture);
+        document.addEventListener("pointerup", pointerupPicture);
+        
+        function pointermovePicture(event) { 
+            if (Math.abs(clikcX - event.offsetX) > Math.abs(clikcY - event.offsetY)) {
+                picture.x = event.offsetX - shiftLeft;
+                picture.y = picture.initialY;
+            } else {
+                picture.x = picture.initialX;
+                picture.y = event.offsetY - shiftTop;;
+            }
+    
+            if ((Math.abs(picture.x - picture.initialX) > board.w * 1.5) || (Math.abs(picture.y - picture.initialY) > board.h * 1.5) ||
+            (picture.x < startBoardX) || (picture.x > startBoardX + board.w * (board.itemsX - 1)) || 
+            (picture.y < startBoardY) || (picture.y > startBoardY + board.h * (board.itemsY - 1))) {
+                picture.x = picture.initialX;
+                picture.y = picture.initialY;
+                document.removeEventListener("pointermove", pointermovePicture);
+                document.removeEventListener("pointerup", pointerupPicture); 
+            }
+        }
+        
+        function pointerupPicture(event) {
+            let changePicture;
+
+            if ((Math.abs(picture.x - picture.initialX) < 5) && (Math.abs(picture.y - picture.initialY) < 5)) {
+                picture.x = picture.initialX;
+                picture.y = picture.initialY;
+                document.removeEventListener("pointermove", pointermovePicture);
+                document.removeEventListener("pointerup", pointerupPicture); 
+                return;
+            }
+
+            if(picture.x < picture.initialX) {
+                changePicture = board.cells[indexY][indexX - 1];
+            } else if (picture.x > picture.initialX) {
+                changePicture = board.cells[indexY][indexX + 1];
+            } else if (picture.y < picture.initialY) {
+                changePicture = board.cells[indexY - 1][indexX];
+            } else if (picture.y > picture.initialY) {
+                changePicture = board.cells[indexY + 1][indexX];
+            }
+
+            const changePictureNumber = changePicture.numberPicture;
+
+            changePicture.numberPicture = pictureNumber;
+            picture.numberPicture = changePictureNumber; 
             picture.x = picture.initialX;
             picture.y = picture.initialY;
+            checkMatch();
+            
+            if(game.gameState !== 2) {
+                changePicture.numberPicture = changePictureNumber;
+                picture.numberPicture = pictureNumber; 
+                picture.x = picture.initialX;
+                picture.y = picture.initialY;
+            } 
+    
+            document.removeEventListener("pointermove", pointermovePicture);
+            document.removeEventListener("pointerup", pointerupPicture); 
         }
-        document.removeEventListener("pointermove", pointermovePicture);
-        document.removeEventListener("pointerup", pointerupPicture); 
-    }
+    }  
 }
-
-
-
-console.log(board.cells)
-
-
-
