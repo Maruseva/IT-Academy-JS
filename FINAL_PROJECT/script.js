@@ -5,10 +5,34 @@ class Game {
         this.ctx = ctx;
         this.backgroundImage = img;
         this.gameState = 0; /* 0 - выстраивается игровое поле, 1 - поиск совпадений; 2 - удаление картинок, 3 - смещение картинок, 4 - перетягивание картинок */
+        this.movesGame = 20;
+        this.points = 0;
     }
 
     setBackground() {
         this.ctx.drawImage(this.backgroundImage, 0, 0)
+    }
+
+    setScoreboard(x, y, w, h) {
+        this.ctx.drawImage(img[3], x, y, w, h);
+    }
+
+    setMovesGame(color, font, x, y,) {
+        this.ctx.beginPath();
+        this.ctx.fillStyle = color;
+        this.ctx.font = font;
+        this.ctx.textAlign='left';
+        this.ctx.textBaseline='middle'
+        this.ctx.fillText(`ход: ${this.movesGame}`, x, y);
+    }
+
+    setPoinpsGame(color, font, x, y,) {
+        this.ctx.beginPath();
+        this.ctx.fillStyle = color;
+        this.ctx.font = font;
+        this.ctx.textAlign='left';
+        this.ctx.textBaseline='middle'
+        this.ctx.fillText(`очки: ${this.points}`, x, y);
     }
 
     setCell(color, x, y, w, h) {
@@ -21,6 +45,7 @@ class Game {
 
     start(){
         this.setBackground();
+        drawScoreboard();
         drawBoard();
         if(this.gameState === 1) {
             checkMatch();
@@ -35,13 +60,23 @@ class Game {
     }  
 }
 
-const windowInnerWidth = window.innerWidth;
-const windowInnerHeight = window.innerHeight;
+let windowInnerWidth = window.innerWidth;
+let windowInnerHeight = window.innerHeight;
 const canvas = document.getElementById('canvas');
 canvas.setAttribute('width', `${windowInnerWidth}`);
 canvas.setAttribute('height', `${windowInnerHeight}`);
 const context = canvas.getContext('2d');
 const img = document.getElementsByTagName('img'); 
+
+window.addEventListener('resize', setNewSize);
+
+function setNewSize() {
+    windowInnerWidth = window.innerWidth;
+    windowInnerHeight = window.innerHeight;
+    canvas.setAttribute('width', `${windowInnerWidth}`);
+    canvas.setAttribute('height', `${windowInnerHeight}`);
+    game.start();
+}
 
 const game = new Game(context, img[0]);
 window.addEventListener('load', () => {
@@ -51,6 +86,7 @@ window.addEventListener('load', () => {
 document.addEventListener('pointerdown', pointerdownPicture);
 
 const board = {color: 'rgba(255, 255, 255, 0.2)', w: '50', h: '50', itemsX: 9, itemsY: 9, cells: []};
+const score = {color: 'rgba(255, 255, 255, 0.9)', font: 'bold 30px Verdana'}
 const elementsOnSprite = [
     {x: 322, y: 322},
     {x: 0, y: 322},
@@ -85,10 +121,18 @@ const spriteMatch = [
 let startBoardX = windowInnerWidth / 2 - board.w * board.itemsX / 2;
 let startBoardY = windowInnerHeight / 2 - board.h * board.itemsY / 2;
 
+function drawScoreboard() {
+
+    game.setScoreboard(startBoardX, startBoardY - board.h * 2, board.w * board.itemsX, board.h * 2);
+    game.setMovesGame(score.color, score.font, startBoardX + 20, startBoardY - board.h);
+    game.setPoinpsGame(score.color, score.font, windowInnerWidth / 2, startBoardY - board.h);
+}
+
 function drawBoard() {
     game.gameState = 1;
     let x = startBoardX;
     let y = startBoardY;
+
     for (let i = 0; i < board.itemsX; i++) {
         if(!(board.cells[i])) {
             board.cells[i] = [];
@@ -165,6 +209,7 @@ function addHorizontalMatch(numArrey, startIndex, endIndex) {
         if(i === numArrey) {
             for(let j = startIndex; j < endIndex; j++) {
                 board.cells[i][j].match = true;
+                game.points += 10;
             }
         }
     }
@@ -175,6 +220,7 @@ function addVerticalMatch(startNumArrey, endNumArrey, index) {
         for(let j = 0; j < board.cells[i].length; j++) {
             if((i >= startNumArrey && i < endNumArrey) && (j === index)) {
                 board.cells[i][j].match = true;
+                game.points += 10;
             }
         }  
     }
@@ -256,7 +302,7 @@ function pointerdownPicture (event) {
     (event.offsetY < startBoardY) || (event.offsetY > startBoardY + board.h * board.itemsY)) {
         return;
     }
-    
+
     if (game.gameState === 4) {
         let picture;
         let indexX;
@@ -336,7 +382,9 @@ function pointerdownPicture (event) {
                 picture.numberPicture = pictureNumber; 
                 picture.x = picture.initialX;
                 picture.y = picture.initialY;
-            } 
+            } else {
+                game.movesGame -= 1;
+            }
     
             document.removeEventListener("pointermove", pointermovePicture);
             document.removeEventListener("pointerup", pointerupPicture); 
