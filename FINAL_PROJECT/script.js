@@ -75,7 +75,6 @@ function setNewSize() {
     windowInnerHeight = window.innerHeight;
     canvas.setAttribute('width', `${windowInnerWidth}`);
     canvas.setAttribute('height', `${windowInnerHeight}`);
-    game.start();
 }
 
 const game = new Game(context, img[0]);
@@ -86,7 +85,7 @@ window.addEventListener('load', () => {
 document.addEventListener('pointerdown', pointerdownPicture);
 
 const board = {color: 'rgba(255, 255, 255, 0.2)', w: '50', h: '50', itemsX: 9, itemsY: 9, cells: []};
-const score = {color: 'rgba(255, 255, 255, 0.9)', font: 'bold 30px Verdana'}
+const score = {color: 'rgba(255, 255, 255, 0.9)', font: 'bold 26px Verdana'}
 const elementsOnSprite = [
     {x: 322, y: 322},
     {x: 0, y: 322},
@@ -122,7 +121,6 @@ let startBoardX = windowInnerWidth / 2 - board.w * board.itemsX / 2;
 let startBoardY = windowInnerHeight / 2 - board.h * board.itemsY / 2;
 
 function drawScoreboard() {
-
     game.setScoreboard(startBoardX, startBoardY - board.h * 2, board.w * board.itemsX, board.h * 2);
     game.setMovesGame(score.color, score.font, startBoardX + 20, startBoardY - board.h);
     game.setPoinpsGame(score.color, score.font, windowInnerWidth / 2, startBoardY - board.h);
@@ -141,6 +139,9 @@ function drawBoard() {
             if(!(board.cells[i][j])) {
                 let e = Math.floor (1 + Math.random() * (6 + 1 - 1));
                 board.cells[i][j] = {numberPicture: e, x: x, y: y, initialY: y, initialX: x};
+            // } else {
+            //     board.cells[i][j].x = x;
+            //     board.cells[i][j].y = y;
             }
             game.setCell(board.color, x, y, board.w, board.h);
             if(board.cells[i][j].match) {
