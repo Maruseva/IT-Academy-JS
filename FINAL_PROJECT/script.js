@@ -85,7 +85,7 @@ window.addEventListener('load', () => {
 document.addEventListener('pointerdown', pointerdownPicture);
 
 const board = {color: 'rgba(255, 255, 255, 0.2)', w: '50', h: '50', itemsX: 9, itemsY: 9, cells: []};
-const score = {color: 'rgba(255, 255, 255, 0.9)', font: 'bold 26px Verdana'}
+const score = {color: 'rgba(255, 255, 255, 0.9)', font: '24px Stalinist One'}
 const elementsOnSprite = [
     {x: 322, y: 322},
     {x: 0, y: 322},
@@ -123,7 +123,7 @@ let startBoardY = windowInnerHeight / 2 - board.h * board.itemsY / 2;
 function drawScoreboard() {
     game.setScoreboard(startBoardX, startBoardY - board.h * 2, board.w * board.itemsX, board.h * 2);
     game.setMovesGame(score.color, score.font, startBoardX + 20, startBoardY - board.h);
-    game.setPoinpsGame(score.color, score.font, windowInnerWidth / 2, startBoardY - board.h);
+    game.setPoinpsGame(score.color, score.font, startBoardX + board.w * 4, startBoardY - board.h);
 }
 
 function drawBoard() {
