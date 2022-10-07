@@ -5,8 +5,9 @@ class Game {
         this.ctx = ctx;
         this.backgroundImage = img;
         this.gameState = 0; /* 0 - выстраивается игровое поле, 1 - поиск совпадений; 2 - удаление картинок, 3 - смещение картинок, 4 - перетягивание картинок */
-        this.movesGame = 20;
+        this.movesGame = 1;
         this.points = 0;
+        this.storage = {};
     }
 
     setBackground() {
@@ -55,6 +56,9 @@ class Game {
         }
         if(this.gameState === 3) {
             movePictures()
+        }
+        if(this.gameState === 3 && this.movesGame === 0) {
+            gameEnd()
         }
         requestAnimationFrame(this.start.bind(this));
     }  
@@ -227,7 +231,7 @@ function addVerticalMatch(startNumArrey, endNumArrey, index) {
     }
 }
 
-function removeMatchingPictures () {
+function removeMatchingPictures() {
     for(let i = 0; i < (board.cells.length); i++) {
         for(let j = 0; j < board.cells[i].length; j++) {
             if('match' in board.cells[i][j]) {
@@ -298,7 +302,7 @@ function movePictures() {
     }); 
 }
 
-function pointerdownPicture (event) {
+function pointerdownPicture(event) {
     if ((event.offsetX < startBoardX) || (event.offsetX > startBoardX + board.w * board.itemsX) ||
     (event.offsetY < startBoardY) || (event.offsetY > startBoardY + board.h * board.itemsY)) {
         return;
@@ -392,3 +396,4 @@ function pointerdownPicture (event) {
         }
     }  
 }
+
