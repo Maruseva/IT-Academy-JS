@@ -5,9 +5,8 @@ class Game {
         this.ctx = ctx;
         this.backgroundImage = img;
         this.gameState = 0; /* 0 - выстраивается игровое поле, 1 - поиск совпадений; 2 - удаление картинок, 3 - смещение картинок, 4 - перетягивание картинок */
-        this.movesGame = 1;
+        this.movesGame = 20;
         this.points = 0;
-        this.storage = {};
     }
 
     setBackground() {
@@ -57,7 +56,7 @@ class Game {
         if(this.gameState === 3) {
             movePictures()
         }
-        if(this.gameState === 3 && this.movesGame === 0) {
+        if(this.gameState === 4 && this.movesGame === 0) {
             gameEnd()
         }
         requestAnimationFrame(this.start.bind(this));
@@ -82,9 +81,6 @@ function setNewSize() {
 }
 
 const game = new Game(context, img[0]);
-window.addEventListener('load', () => {
-    game.start();
-    });
 
 document.addEventListener('pointerdown', pointerdownPicture);
 
@@ -308,7 +304,7 @@ function pointerdownPicture(event) {
         return;
     }
 
-    if (game.gameState === 4) {
+    if (game.gameState === 4 && game.movesGame > 0) {
         let picture;
         let indexX;
         let indexY;
@@ -346,14 +342,15 @@ function pointerdownPicture(event) {
             if ((Math.abs(picture.x - picture.initialX) > board.w * 1.5) || (Math.abs(picture.y - picture.initialY) > board.h * 1.5) ||
             (picture.x < startBoardX) || (picture.x > startBoardX + board.w * (board.itemsX - 1)) || 
             (picture.y < startBoardY) || (picture.y > startBoardY + board.h * (board.itemsY - 1))) {
-                picture.x = picture.initialX;
-                picture.y = picture.initialY;
+                pointerupPicture()
+                // picture.x = picture.initialX;
+                // picture.y = picture.initialY;
                 document.removeEventListener("pointermove", pointermovePicture);
                 document.removeEventListener("pointerup", pointerupPicture); 
             }
         }
         
-        function pointerupPicture(event) {
+        function pointerupPicture() {
             let changePicture;
 
             if ((Math.abs(picture.x - picture.initialX) < 5) && (Math.abs(picture.y - picture.initialY) < 5)) {

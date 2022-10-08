@@ -1,13 +1,13 @@
 'use strict'
-
 window.onhashchange = changeURL;
 
 var SPAState = {};
-
 const buttons = ['ИГРАТЬ', 'РЕКОРДЫ', 'ОБ ИГРЕ'];
 const page = document.getElementById('page');
+let sp = new URLSearchParams();
+sp.append('n', 'MARUSEVA_ALIENS_TABLEOFRECORDS');
 
-function changeURL() {
+async function changeURL() {
     
     var currentHach = window.location.hash;
     var currentHachJSON = decodeURIComponent(currentHach.substring(1));
@@ -43,6 +43,7 @@ function changeURL() {
             break;
         case 'game': 
             canvas.style.display = 'block';
+            game.start();
             break;
         case 'rules':
             canvas.style.display = 'none';
@@ -59,10 +60,14 @@ function changeURL() {
             let newDiv2 = document.createElement('div');
             newDiv2.style.cssText = "background-image: url(img/background.jpeg); height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;";
            
-            for(let j = 1; j<7; j++) {
+            let data = await processingData ('READ');
+            let dataArr = JSON.parse(data.result);
+            dataArr.sort(( a, b ) => b.points - a.points);
+
+            for(let j = 1; j<5; j++) {
                 let divRecords = document.createElement('div');
-                divRecords.style.cssText = 'background: url(img/btn.png) no-repeat; background-size: contain; box-sizing: border-box; width: 420px; height: 74px; cursor: pointer; text-align: center; font-family: Stalinist One; font-size: 20px; padding-top: 20px;';
-                divRecords.innerHTML = `${j}`
+                divRecords.style.cssText = 'background: url(img/btn.png) no-repeat; background-size: contain; box-sizing: border-box; width: 420px; height: 74px; color: gainsboro; text-align: center; font-family: Stalinist One; font-size: 20px; padding-top: 23px;';
+                divRecords.innerHTML = `${j}. ${dataArr[j-1].name}: ${dataArr[j-1].points}`
                 newDiv2.appendChild(divRecords);
             } 
             page.appendChild(newDiv2);
@@ -89,6 +94,7 @@ changeURL()
 
 function gameEnd() {
     if (!(page.childNodes.length)) {
+
         const form = document.createElement('form');
         form.style.cssText = `background-image: url(img/background.jpeg);position: fixed; left: ${windowInnerWidth / 2 - 200}px; top: ${windowInnerHeight / 2 - 140}px; width: 400px; height: 280px; border-radius: 40px; font-family: Stalinist One; text-align: center; color: gainsboro; display: flex; flex-direction: column; justify-content: center; align-items: center;`
         const span = document.createElement('span');
@@ -96,22 +102,62 @@ function gameEnd() {
         Введите ваше имя:`;
         const input = document.createElement('input');
         input.type = 'text';
+        if(localStorage['aliens']) {
+            input.value = `${JSON.parse(localStorage['aliens'])}`;
+        }
         const btn = document.createElement('div');
         input.style.cssText = 'background: gainsboro; border-radius: 8px; width: 250px; height: 35px; margin: 6px 0; font-family: Stalinist One; font-size: 20px; text-align: center;'
-        btn.innerHTML = 'Новая игра';
+        btn.innerHTML = 'Сохранить';
         btn.style.cssText = 'background: url(img/btn.png) no-repeat; background-size: contain; box-sizing: border-box; width: 310px; height: 74px; cursor: pointer; padding-top: 15px;';
         form. appendChild(span);
         form. appendChild(input);
         form. appendChild(btn);
         page.appendChild(form);
-
-        let userName = input.value;
-        // console.log(gamersName)
-
+       
         btn.addEventListener('click', saveUserData);
-    } 
+    }
 }
 
-function saveUserData (event) {
-    console.log(event)
+async function saveUserData () {
+    let userName = document.getElementsByTagName('input')[0].value;
+
+    if(!(localStorage['aliens'])) {
+        localStorage['aliens'] = JSON.stringify(userName);
+    }
+
+    if(!(userName)) {
+        return
+    }
+
+    let userData = {'name': userName, 'points': game.points};
+    let updatePassword = Math.random();
+    sp.append('p', updatePassword);
+
+    let data = await processingData ('LOCKGET');
+    let dataArr = JSON.parse(data.result);
+    dataArr.push(userData);
+
+    const str = JSON.stringify(dataArr)
+    sp.append('v', str);
+    processingData ('UPDATE')
+
+    game.movesGame = 1;
+    game.points = 0;
+    board.cells = [];
+    
+    page.removeChild(page.firstChild);
+}
+
+async function processingData (command) { 
+    const ajaxHandlerScript="https://fe.it-academy.by/AjaxStringStorage2.php";
+    sp.append('f', command);
+    
+    try {
+        const response = await fetch(ajaxHandlerScript,{ method: 'post', body: sp });
+        const data = await response.json();
+        return data
+    }
+    catch ( error ) {
+        console.error(error);
+    }
 }
