@@ -4,7 +4,7 @@ class Game {
     constructor(ctx, img) {
         this.ctx = ctx;
         this.backgroundImage = img;
-        this.gameState = 0; /* 0 - выстраивается игровое поле, 1 - поиск совпадений; 2 - удаление картинок, 3 - смещение картинок, 4 - перетягивание картинок */
+        this.gameState = 0; /* 1 - поиск совпадений; 2 - удаление картинок, 3 - смещение картинок, 4 - перетягивание картинок */
         this.movesGame = 20;
         this.points = 0;
     }
@@ -51,13 +51,15 @@ class Game {
             checkMatch();
         }
         if(this.gameState === 2) {
-            removeMatchingPictures ()
+            removeMatchingPictures ();
+            matchSound();
+            vibro();
         }
         if(this.gameState === 3) {
-            movePictures()
+            movePictures();
         }
         if(this.gameState === 4 && this.movesGame === 0) {
-            gameEnd()
+            gameEnd();
         }
         requestAnimationFrame(this.start.bind(this));
     }  
@@ -124,6 +126,7 @@ function drawScoreboard() {
     game.setScoreboard(startBoardX, startBoardY - board.h * 2, board.w * board.itemsX, board.h * 2);
     game.setMovesGame(score.color, score.font, startBoardX + 20, startBoardY - board.h);
     game.setPoinpsGame(score.color, score.font, startBoardX + board.w * 4, startBoardY - board.h);
+    // console.log(game.gameState)
 }
 
 function drawBoard() {

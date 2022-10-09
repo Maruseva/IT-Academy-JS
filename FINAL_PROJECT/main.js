@@ -1,6 +1,8 @@
 'use strict'
 window.onhashchange = changeURL;
 
+const backgroundAudio = new Audio('musik/muzyka.mp3');
+const matchAudio = new Audio('musik/heartwav.mp3');
 var SPAState = {};
 const buttons = ['ИГРАТЬ', 'РЕКОРДЫ', 'ОБ ИГРЕ'];
 const page = document.getElementById('page');
@@ -43,7 +45,7 @@ async function changeURL() {
             break;
         case 'game': 
             canvas.style.display = 'block';
-            game.start();
+            // game.start();
             break;
         case 'rules':
             canvas.style.display = 'none';
@@ -75,22 +77,24 @@ async function changeURL() {
     }
 }
 
+changeURL()
+
 function goGame() {
     SPAState.pageName = 'game';
-    updateNewState (SPAState)
+    updateNewState (SPAState);
+    audioInit()
 }
 function goRecords() {
     SPAState.pageName = 'records';
-    updateNewState (SPAState)
+    updateNewState (SPAState);
 }
 function goRules() {
     SPAState.pageName = 'rules';
-    updateNewState (SPAState)
+    updateNewState (SPAState);
 }
 function updateNewState (newState) {
     location.hash = encodeURIComponent(JSON.stringify(newState));
 }
-changeURL()
 
 function gameEnd() {
     if (!(page.childNodes.length)) {
@@ -159,5 +163,35 @@ async function processingData (command) {
     }
     catch ( error ) {
         console.error(error);
+    }
+}
+
+function audioInit() {
+    backgroundAudio.play(); 
+    backgroundAudio.pause();
+    matchAudio.play(); 
+    matchAudio.pause();
+    matchAudio.currentTime = 2;
+}
+
+function matchSound() {
+    if(matchAudio.currentTime > 1) {
+        console.log(matchAudio.currentTime)
+        matchAudio.currentTime = 0;
+        matchAudio.playbackRate = 0.45;
+        matchAudio.play();
+    }
+}
+
+function vibro() {
+    if ( navigator.vibrate ) {
+        
+        // вибрация 100мс
+        window.navigator.vibrate(100);
+        
+        // else {
+        //     // вибрация 3 раза по 100мс с паузами 50мс
+        //     window.navigator.vibrate([100,50,100,50,100]);
+        // }
     }
 }
