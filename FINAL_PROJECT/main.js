@@ -1,7 +1,10 @@
 'use strict'
 window.onhashchange = changeURL;
+const sound = document.getElementById('sound');
+sound.addEventListener('click', turnOffSound)
 
 const backgroundAudio = new Audio('musik/muzyka.mp3');
+backgroundAudio.loop = true;
 const matchAudio = new Audio('musik/heartwav.mp3');
 var SPAState = {};
 const buttons = ['ИГРАТЬ', 'РЕКОРДЫ', 'ОБ ИГРЕ'];
@@ -9,15 +12,15 @@ const page = document.getElementById('page');
 let sp = new URLSearchParams();
 sp.append('n', 'MARUSEVA_ALIENS_TABLEOFRECORDS');
 
-async function changeURL() {
+async function changeURL(event) {
     
     var currentHach = window.location.hash;
-    var currentHachJSON = decodeURIComponent(currentHach.substring(1));
+    var stateStr = currentHach.substring(1);
 
-    if(!(currentHachJSON)) {
+    if(!(stateStr)) {
         SPAState.pageName = 'main';
     } else {
-        SPAState = JSON.parse(currentHachJSON);
+        SPAState = {pageName: stateStr};
     }
 
     if(page.childNodes.length) {
@@ -26,6 +29,7 @@ async function changeURL() {
 
     switch (SPAState.pageName) {
         case 'main':
+            game.stop()
             canvas.style.display = 'none';
             let newDiv = document.createElement('div');
             let arrBtn = [];
@@ -44,8 +48,16 @@ async function changeURL() {
             page.appendChild(newDiv);
             break;
         case 'game': 
-            canvas.style.display = 'block';
-            // game.start();
+            if(!(event)) {
+                window.location.hash = '';
+            } else{
+                canvas.style.display = 'block';
+                game.gameState = 0;
+                game.start();
+            }
+            window.onbeforeunload = befUnload;
+            window.onclose = befUnload;
+            // window.onhashchange= befUnload;
             break;
         case 'rules':
             canvas.style.display = 'none';
@@ -66,7 +78,7 @@ async function changeURL() {
             let dataArr = JSON.parse(data.result);
             dataArr.sort(( a, b ) => b.points - a.points);
 
-            for(let j = 1; j<5; j++) {
+            for(let j = 1; j<7; j++) {
                 let divRecords = document.createElement('div');
                 divRecords.style.cssText = 'background: url(img/btn.png) no-repeat; background-size: contain; box-sizing: border-box; width: 420px; height: 74px; color: gainsboro; text-align: center; font-family: Stalinist One; font-size: 20px; padding-top: 23px;';
                 divRecords.innerHTML = `${j}. ${dataArr[j-1].name}: ${dataArr[j-1].points}`
@@ -82,7 +94,7 @@ changeURL()
 function goGame() {
     SPAState.pageName = 'game';
     updateNewState (SPAState);
-    audioInit()
+    audioMatchInit()
 }
 function goRecords() {
     SPAState.pageName = 'records';
@@ -93,7 +105,7 @@ function goRules() {
     updateNewState (SPAState);
 }
 function updateNewState (newState) {
-    location.hash = encodeURIComponent(JSON.stringify(newState));
+    location.hash = newState.pageName;
 }
 
 function gameEnd() {
@@ -145,7 +157,7 @@ async function saveUserData () {
     sp.append('v', str);
     processingData ('UPDATE')
 
-    game.movesGame = 1;
+    game.movesGame = 20;
     game.points = 0;
     board.cells = [];
     
@@ -166,9 +178,10 @@ async function processingData (command) {
     }
 }
 
-function audioInit() {
-    backgroundAudio.play(); 
-    backgroundAudio.pause();
+function audioMatchInit() {
+    if(matchAudio.currentTime > 1) {
+        return;
+    }
     matchAudio.play(); 
     matchAudio.pause();
     matchAudio.currentTime = 2;
@@ -176,22 +189,31 @@ function audioInit() {
 
 function matchSound() {
     if(matchAudio.currentTime > 1) {
-        console.log(matchAudio.currentTime)
         matchAudio.currentTime = 0;
-        matchAudio.playbackRate = 0.45;
+        matchAudio.playbackRate = 0.4;
         matchAudio.play();
     }
 }
 
 function vibro() {
     if ( navigator.vibrate ) {
-        
         // вибрация 100мс
         window.navigator.vibrate(100);
-        
-        // else {
-        //     // вибрация 3 раза по 100мс с паузами 50мс
-        //     window.navigator.vibrate([100,50,100,50,100]);
-        // }
+    }
+}
+
+function befUnload(event) {
+    if(game.movesGame < 20) {
+        event.returnValue = 'Данные не будут сохранены!'
+    }
+}
+
+function turnOffSound() {
+    if(sound.style.width === '70px') {
+        backgroundAudio.play(); 
+        sound.style.width = '40px';
+    } else {
+        backgroundAudio.pause();
+        sound.style.width = '70px';
     }
 }

@@ -4,7 +4,7 @@ class Game {
     constructor(ctx, img) {
         this.ctx = ctx;
         this.backgroundImage = img;
-        this.gameState = 0; /* 1 - поиск совпадений; 2 - удаление картинок, 3 - смещение картинок, 4 - перетягивание картинок */
+        this.gameState = 0; /* 1 - поиск совпадений; 2 - удаление картинок, 3 - смещение картинок, 4 - перетягивание картинок, 5 - стоп */
         this.movesGame = 20;
         this.points = 0;
     }
@@ -44,25 +44,34 @@ class Game {
     } 
 
     start(){
-        this.setBackground();
-        drawScoreboard();
-        drawBoard();
-        if(this.gameState === 1) {
-            checkMatch();
+        if (this.gameState !== 5) {
+            this.setBackground();
+            drawScoreboard();
+            drawBoard();
+            if(this.gameState === 1) {
+                checkMatch();
+            }
+            if(this.gameState === 2) {
+                removeMatchingPictures ();
+                matchSound();
+                vibro();
+            }
+            if(this.gameState === 3) {
+                movePictures();
+            }
+            if(this.gameState === 4 && this.movesGame === 0) {
+                gameEnd();
+            }
+            requestAnimationFrame(this.start.bind(this));
         }
-        if(this.gameState === 2) {
-            removeMatchingPictures ();
-            matchSound();
-            vibro();
-        }
-        if(this.gameState === 3) {
-            movePictures();
-        }
-        if(this.gameState === 4 && this.movesGame === 0) {
-            gameEnd();
-        }
-        requestAnimationFrame(this.start.bind(this));
     }  
+
+    stop() {
+        board.cells = [];
+        game.movesGame = 20;
+        game.points = 0;
+        this.gameState = 5;
+    }
 }
 
 let windowInnerWidth = window.innerWidth;
@@ -396,4 +405,3 @@ function pointerdownPicture(event) {
         }
     }  
 }
-

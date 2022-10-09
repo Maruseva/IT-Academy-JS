@@ -9,12 +9,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Stalinist+One&display=swap" rel="stylesheet">
     <title>Aliens</title>
     <style>
+        #sound {
+            background: url("img/sound.png") no-repeat;
+            background-size: cover;
+            position: fixed;
+            top: 5%;
+            left: 10%;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+        }
         img, canvas {
             display: none;
         }
     </style>
 </head>
 <body>
+    <div id="sound"></div>
     <canvas id="canvas"></canvas>
     <div id="page"></div>
     <img src="img/background.jpeg" alt="">
