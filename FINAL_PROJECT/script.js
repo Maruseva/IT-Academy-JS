@@ -84,13 +84,6 @@ const img = document.getElementsByTagName('img');
 
 window.addEventListener('resize', setNewSize);
 
-function setNewSize() {
-    windowInnerWidth = window.innerWidth;
-    windowInnerHeight = window.innerHeight;
-    canvas.setAttribute('width', `${windowInnerWidth}`);
-    canvas.setAttribute('height', `${windowInnerHeight}`);
-}
-
 const game = new Game(context, img[0]);
 
 document.addEventListener('pointerdown', pointerdownPicture);
@@ -130,17 +123,28 @@ const spriteMatch = [
 
 let startBoardX = windowInnerWidth / 2 - board.w * board.itemsX / 2;
 let startBoardY = windowInnerHeight / 2 - board.h * board.itemsY / 2;
+let resize = false;
+
+function setNewSize() {
+    windowInnerWidth = window.innerWidth;
+    windowInnerHeight = window.innerHeight;
+    canvas.setAttribute('width', `${windowInnerWidth}`);
+    canvas.setAttribute('height', `${windowInnerHeight}`);
+    startBoardX = windowInnerWidth / 2 - board.w * board.itemsX / 2;
+    startBoardY = windowInnerHeight / 2 - board.h * board.itemsY / 2;
+    resize = true;
+}
+
 
 function drawScoreboard() {
     game.setScoreboard(startBoardX, startBoardY - board.h * 2, board.w * board.itemsX, board.h * 2);
     game.setMovesGame(score.color, score.font, startBoardX + 20, startBoardY - board.h);
     game.setPoinpsGame(score.color, score.font, startBoardX + board.w * 4, startBoardY - board.h);
-    // console.log(game.gameState)
 }
 
 function drawBoard() {
     game.gameState = 1;
-    let x = startBoardX;
+    let x = startBoardX ;
     let y = startBoardY;
 
     for (let i = 0; i < board.itemsX; i++) {
@@ -151,9 +155,11 @@ function drawBoard() {
             if(!(board.cells[i][j])) {
                 let e = Math.floor (1 + Math.random() * (6 + 1 - 1));
                 board.cells[i][j] = {numberPicture: e, x: x, y: y, initialY: y, initialX: x};
-            // } else {
-            //     board.cells[i][j].x = x;
-            //     board.cells[i][j].y = y;
+            } else if (resize === true) {
+                board.cells[i][j].x = x;
+                board.cells[i][j].y = y;
+                board.cells[i][j].initialX = x;
+                board.cells[i][j].initialY = y;
             }
             game.setCell(board.color, x, y, board.w, board.h);
             if(board.cells[i][j].match) {
@@ -169,6 +175,7 @@ function drawBoard() {
         x = windowInnerWidth / 2 - board.w * board.itemsX / 2;
         y += Number(board.h);
     }
+    resize = false;
 }
 
 function checkMatch() {
@@ -279,6 +286,7 @@ function removeMatchingPictures() {
 }
 
 function movePictures() {
+    
     board.cells[0].forEach(el => {
         if ('match' in el) {
             let e = Math.floor (1 + Math.random() * (6 + 1 - 1));
@@ -311,6 +319,7 @@ function movePictures() {
 }
 
 function pointerdownPicture(event) {
+
     if ((event.offsetX < startBoardX) || (event.offsetX > startBoardX + board.w * board.itemsX) ||
     (event.offsetY < startBoardY) || (event.offsetY > startBoardY + board.h * board.itemsY)) {
         return;

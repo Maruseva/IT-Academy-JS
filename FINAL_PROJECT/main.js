@@ -209,11 +209,13 @@ function befUnload(event) {
 }
 
 function turnOffSound() {
-    if(sound.style.width === '70px') {
+    if(sound.dataset.status === 'stop') {
         backgroundAudio.play(); 
+        sound.dataset.status = 'play';
         sound.style.width = '40px';
     } else {
         backgroundAudio.pause();
+        sound.dataset.status = 'stop';
         sound.style.width = '70px';
     }
 }
