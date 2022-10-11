@@ -33,12 +33,13 @@ async function changeURL(event) {
             canvas.style.display = 'none';
             let newDiv = document.createElement('div');
             let arrBtn = [];
-            newDiv.style.cssText = "background-image: url(img/background.jpeg); height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;";
+            newDiv.style.cssText = "flex-direction: column;";
 
             for(let i = 0; i < buttons.length; i++) {
                 let btn = document.createElement('div');
+                btn.className = 'btn';
+                btn.classList.add('main');
                 btn.innerHTML = buttons[i];
-                btn.style.cssText = 'background: url(img/btn.png) no-repeat; background-size: contain; box-sizing: border-box; width: 420px; height: 74px; cursor: pointer; text-align: center; font-family: Stalinist One; font-size: 26px; padding-top: 20px;';
                 newDiv.appendChild(btn);
                 arrBtn[i] = btn;
             }
@@ -62,9 +63,8 @@ async function changeURL(event) {
         case 'rules':
             canvas.style.display = 'none';
             let newDiv1 = document.createElement('div');
-            newDiv1.style.cssText = "background-image: url(img/background.jpeg); height: 100vh; display: flex; justify-content: center; align-items: center;";
             let divRules = document.createElement('div');
-            divRules.style.cssText = "text-align: center; font-family: Stalinist One; font-size: 21px; color: gainsboro; width: 1000px;";
+            divRules.className = 'divRules';
             divRules.innerHTML = 'Три в ряд — жанр компьютерных игр. Игры этого жанра характеризуются тем, что их игровой мир состоит из таблицы или сетки элементов, а задачей игрока является манипулирование элементами таким образом, чтобы совпали заданные игрой шаблонные комбинации, и после выполнения условия собранные элементы исчезают. Характерным представителем этого жанра является выпущенная в 2001 году игра Bejeweled, основанная на игре 1994 года «Шарики», а сама история появления элементов жанра прослеживается до «Тетриса» и Chain Shot! , изданных в 1985 году.'
             newDiv1.appendChild(divRules);
             page.appendChild(newDiv1);
@@ -72,15 +72,15 @@ async function changeURL(event) {
         case 'records':
             canvas.style.display = 'none';
             let newDiv2 = document.createElement('div');
-            newDiv2.style.cssText = "background-image: url(img/background.jpeg); height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;";
-           
+            newDiv2.style.cssText = "flex-direction: column;";
             let data = await processingData ('READ');
             let dataArr = JSON.parse(data.result);
             dataArr.sort(( a, b ) => b.points - a.points);
 
             for(let j = 1; j<7; j++) {
                 let divRecords = document.createElement('div');
-                divRecords.style.cssText = 'background: url(img/btn.png) no-repeat; background-size: contain; box-sizing: border-box; width: 420px; height: 74px; color: gainsboro; text-align: center; font-family: Stalinist One; font-size: 20px; padding-top: 23px;';
+                divRecords.className = 'btn';
+                divRecords.classList.add('divRecords');
                 divRecords.innerHTML = `${j}. ${dataArr[j-1].name}: ${dataArr[j-1].points}`
                 newDiv2.appendChild(divRecords);
             } 
@@ -110,27 +110,18 @@ function updateNewState (newState) {
 
 function gameEnd() {
     if (!(page.childNodes.length)) {
-
-        const form = document.createElement('form');
-        form.style.cssText = `background-image: url(img/background.jpeg);position: fixed; left: ${windowInnerWidth / 2 - 200}px; top: ${windowInnerHeight / 2 - 140}px; width: 400px; height: 280px; border-radius: 40px; font-family: Stalinist One; text-align: center; color: gainsboro; display: flex; flex-direction: column; justify-content: center; align-items: center;`
-        const span = document.createElement('span');
-        span.innerHTML = `Ваш результат: ${game.points} 
+        const form = document.getElementById('form');
+        form.style.cssText = `display: flex; left: ${windowInnerWidth / 2 - 200}px; top: ${windowInnerHeight / 2 - 140}px;`
+        const span = form.getElementsByTagName('span');
+        span[0].innerHTML = `Ваш результат: ${game.points} 
         Введите ваше имя:`;
-        const input = document.createElement('input');
-        input.type = 'text';
+        const input = form.getElementsByTagName('input');
         if(localStorage['aliens']) {
-            input.value = `${JSON.parse(localStorage['aliens'])}`;
+            input[0].value = `${JSON.parse(localStorage['aliens'])}`;
         }
-        const btn = document.createElement('div');
-        input.style.cssText = 'background: gainsboro; border-radius: 8px; width: 250px; height: 35px; margin: 6px 0; font-family: Stalinist One; font-size: 20px; text-align: center;'
-        btn.innerHTML = 'Сохранить';
-        btn.style.cssText = 'background: url(img/btn.png) no-repeat; background-size: contain; box-sizing: border-box; width: 310px; height: 74px; cursor: pointer; padding-top: 15px;';
-        form. appendChild(span);
-        form. appendChild(input);
-        form. appendChild(btn);
-        page.appendChild(form);
-       
-        btn.addEventListener('click', saveUserData);
+        const btn = form.getElementsByTagName('div')
+
+        btn[0].addEventListener('click', saveUserData);
     }
 }
 
@@ -161,7 +152,9 @@ async function saveUserData () {
     game.points = 0;
     board.cells = [];
     
-    page.removeChild(page.firstChild);
+    const form = document.getElementById('form');
+    form.style.cssText = 'display: none;'
+       
 }
 
 async function processingData (command) { 

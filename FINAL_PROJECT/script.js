@@ -90,6 +90,11 @@ document.addEventListener('pointerdown', pointerdownPicture);
 
 const board = {color: 'rgba(255, 255, 255, 0.2)', w: '50', h: '50', itemsX: 9, itemsY: 9, cells: []};
 const score = {color: 'rgba(255, 255, 255, 0.9)', font: '24px Stalinist One'}
+if(windowInnerWidth < 450) {
+    board.w = windowInnerWidth / board.itemsX;
+    board.h = board.w;
+    score.font = '20px Stalinist One'
+}
 const elementsOnSprite = [
     {x: 322, y: 322},
     {x: 0, y: 322},
@@ -134,7 +139,6 @@ function setNewSize() {
     startBoardY = windowInnerHeight / 2 - board.h * board.itemsY / 2;
     resize = true;
 }
-
 
 function drawScoreboard() {
     game.setScoreboard(startBoardX, startBoardY - board.h * 2, board.w * board.itemsX, board.h * 2);
@@ -364,8 +368,6 @@ function pointerdownPicture(event) {
             (picture.x < startBoardX) || (picture.x > startBoardX + board.w * (board.itemsX - 1)) || 
             (picture.y < startBoardY) || (picture.y > startBoardY + board.h * (board.itemsY - 1))) {
                 pointerupPicture()
-                // picture.x = picture.initialX;
-                // picture.y = picture.initialY;
                 document.removeEventListener("pointermove", pointermovePicture);
                 document.removeEventListener("pointerup", pointerupPicture); 
             }
