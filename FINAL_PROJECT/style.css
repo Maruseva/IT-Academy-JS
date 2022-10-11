@@ -1,7 +1,11 @@
+html {
+    height: -webkit-fill-available;
+  }
 body {
     margin: 0;
     background-image: url(img/background.jpeg);
-    height: 100vh;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
     display: flex;
     justify-content: center;
     align-items: center;
