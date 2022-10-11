@@ -111,7 +111,7 @@ function updateNewState (newState) {
 function gameEnd() {
     if (!(page.childNodes.length)) {
         const form = document.getElementById('form');
-        form.style.cssText = `display: flex; left: ${windowInnerWidth / 2 - 200}px; top: ${windowInnerHeight / 2 - 140}px;`
+        form.style.cssText = 'display: flex;'
         const span = form.getElementsByTagName('span');
         span[0].innerHTML = `Ваш результат: ${game.points} 
         Введите ваше имя:`;

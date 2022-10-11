@@ -87,6 +87,7 @@ window.addEventListener('resize', setNewSize);
 const game = new Game(context, img[0]);
 
 document.addEventListener('pointerdown', pointerdownPicture);
+// window.addEventListener('touchstart', pointerdownPicture, {passive: false})
 
 const board = {color: 'rgba(255, 255, 255, 0.2)', w: '50', h: '50', itemsX: 9, itemsY: 9, cells: []};
 const score = {color: 'rgba(255, 255, 255, 0.9)', font: '24px Stalinist One'}
@@ -323,6 +324,7 @@ function movePictures() {
 }
 
 function pointerdownPicture(event) {
+    // event.preventDefault();
 
     if ((event.offsetX < startBoardX) || (event.offsetX > startBoardX + board.w * board.itemsX) ||
     (event.offsetY < startBoardY) || (event.offsetY > startBoardY + board.h * board.itemsY)) {
@@ -354,8 +356,11 @@ function pointerdownPicture(event) {
     
         document.addEventListener("pointermove", pointermovePicture);
         document.addEventListener("pointerup", pointerupPicture);
+        // window.addEventListener('touchmove', pointermovePicture, {passive: false});
+        // window.addEventListener('touchend', pointerupPicture, {passive: false});
         
         function pointermovePicture(event) { 
+            // event.preventDefault();
             if (Math.abs(clikcX - event.offsetX) > Math.abs(clikcY - event.offsetY)) {
                 picture.x = event.offsetX - shiftLeft;
                 picture.y = picture.initialY;
@@ -370,10 +375,13 @@ function pointerdownPicture(event) {
                 pointerupPicture()
                 document.removeEventListener("pointermove", pointermovePicture);
                 document.removeEventListener("pointerup", pointerupPicture); 
+                // window.removeEventListener('touchmove', pointermovePicture, {passive: false});
+                // window.removeEventListener('touchend', pointerupPicture, {passive: false});
             }
         }
         
-        function pointerupPicture() {
+        function pointerupPicture(event) {
+            // event.preventDefault();
             let changePicture;
 
             if ((Math.abs(picture.x - picture.initialX) < 5) && (Math.abs(picture.y - picture.initialY) < 5)) {
@@ -381,6 +389,8 @@ function pointerdownPicture(event) {
                 picture.y = picture.initialY;
                 document.removeEventListener("pointermove", pointermovePicture);
                 document.removeEventListener("pointerup", pointerupPicture); 
+                // window.removeEventListener('touchmove', pointermovePicture, {passive: false});
+                // window.removeEventListener('touchend', pointerupPicture, {passive: false});
                 return;
             }
 
@@ -413,6 +423,8 @@ function pointerdownPicture(event) {
     
             document.removeEventListener("pointermove", pointermovePicture);
             document.removeEventListener("pointerup", pointerupPicture); 
+            // window.removeEventListener('touchmove', pointermovePicture, {passive: false});
+            // window.removeEventListener('touchend', pointerupPicture, {passive: false});
         }
     }  
 }

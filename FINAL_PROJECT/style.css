@@ -1,4 +1,5 @@
 body {
+    margin: 0;
     background-image: url(img/background.jpeg);
     height: 100vh;
     display: flex;
@@ -45,6 +46,8 @@ img, canvas {
     display: none;
     background-image: url(img/background.jpeg);
     position: fixed; 
+    left: calc(50% - 200px);
+    top: calc(50% - 140px);
     width: 400px; 
     height: 280px; 
     border-radius: 40px; 
@@ -94,5 +97,6 @@ input {
     }
     #form {
         width: 310px;
+        left: calc(50% - 155px);
     }
 }
