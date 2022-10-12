@@ -19,6 +19,9 @@ body {
 img, canvas {
     display: none;
 }
+canvas {
+    touch-action: none;
+}
 #sound {
     background: url("img/sound.png") no-repeat;
     background-size: cover;

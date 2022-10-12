@@ -87,7 +87,7 @@ window.addEventListener('resize', setNewSize);
 const game = new Game(context, img[0]);
 
 document.addEventListener('pointerdown', pointerdownPicture);
-canvas.addEventListener('touchstart', pointerdownPicture, {passive: false})
+// canvas.addEventListener('touchstart', pointerdownPicture, {passive: false})
 
 const board = {color: 'rgba(255, 255, 255, 0.2)', w: '50', h: '50', itemsX: 9, itemsY: 9, cells: []};
 const score = {color: 'rgba(255, 255, 255, 0.9)', font: '24px Stalinist One'}
@@ -324,10 +324,9 @@ function movePictures() {
 }
 
 function pointerdownPicture(event) {
-    event.preventDefault();
 
-    if ((event.offsetX < startBoardX) || (event.offsetX > startBoardX + board.w * board.itemsX) ||
-    (event.offsetY < startBoardY) || (event.offsetY > startBoardY + board.h * board.itemsY)) {
+    if ((event.clientX < startBoardX) || (event.clientX > startBoardX + board.w * board.itemsX) ||
+    (event.clientY < startBoardY) || (event.clientY > startBoardY + board.h * board.itemsY)) {
         return;
     }
 
@@ -338,35 +337,30 @@ function pointerdownPicture(event) {
 
         for(let i = 0; i < (board.cells.length); i++) {
             for(let j = 0; j < board.cells[i].length; j++) {
-                if(board.cells[i][j].x < event.offsetX && board.cells[i][j].y < event.offsetY && 
-                event.offsetX - board.cells[i][j].x < board.w && event.offsetY - board.cells[i][j].y < board.h) {
-                    
+                if(board.cells[i][j].x < event.clientX && board.cells[i][j].y < event.clientY && 
+                event.clientX - board.cells[i][j].x < board.w && event.clientY - board.cells[i][j].y < board.h) {
                     picture = board.cells[i][j];
                     indexY = i;
                     indexX = j;
                 }
             }
         }
-        
-        const clikcX = event.offsetX;
-        const clikcY = event.offsetY;
+        const clikcX = event.clientX;
+        const clikcY = event.clientY;
         const shiftLeft = clikcX - picture.initialX;
         const shiftTop = clikcY - picture.initialY;
         const pictureNumber = picture.numberPicture;
     
         document.addEventListener("pointermove", pointermovePicture);
         document.addEventListener("pointerup", pointerupPicture);
-        canvas.addEventListener('touchmove', pointermovePicture, {passive: false});
-        canvas.addEventListener('touchend', pointerupPicture, {passive: false});
         
         function pointermovePicture(event) { 
-            event.preventDefault();
-            if (Math.abs(clikcX - event.offsetX) > Math.abs(clikcY - event.offsetY)) {
-                picture.x = event.offsetX - shiftLeft;
+            if (Math.abs(clikcX - event.clientX) > Math.abs(clikcY - event.clientY)) {
+                picture.x = event.clientX - shiftLeft;
                 picture.y = picture.initialY;
             } else {
                 picture.x = picture.initialX;
-                picture.y = event.offsetY - shiftTop;;
+                picture.y = event.clientY - shiftTop;;
             }
     
             if ((Math.abs(picture.x - picture.initialX) > board.w * 1.5) || (Math.abs(picture.y - picture.initialY) > board.h * 1.5) ||
@@ -375,13 +369,10 @@ function pointerdownPicture(event) {
                 pointerupPicture()
                 document.removeEventListener("pointermove", pointermovePicture);
                 document.removeEventListener("pointerup", pointerupPicture); 
-                canvas.removeEventListener('touchmove', pointermovePicture, {passive: false});
-                canvas.removeEventListener('touchend', pointerupPicture, {passive: false}); 
             }
         }
         
-        function pointerupPicture(event) {
-            event.preventDefault();
+        function pointerupPicture() {
             let changePicture;
 
             if ((Math.abs(picture.x - picture.initialX) < 5) && (Math.abs(picture.y - picture.initialY) < 5)) {
@@ -389,8 +380,6 @@ function pointerdownPicture(event) {
                 picture.y = picture.initialY;
                 document.removeEventListener("pointermove", pointermovePicture);
                 document.removeEventListener("pointerup", pointerupPicture); 
-                canvas.removeEventListener('touchmove', pointermovePicture, {passive: false});
-                canvas.removeEventListener('touchend', pointerupPicture, {passive: false});
                 return;
             }
 
@@ -423,8 +412,6 @@ function pointerdownPicture(event) {
     
             document.removeEventListener("pointermove", pointermovePicture);
             document.removeEventListener("pointerup", pointerupPicture); 
-            canvas.removeEventListener('touchmove', pointermovePicture, {passive: false});
-            canvas.removeEventListener('touchend', pointerupPicture, {passive: false});
         }
     }  
 }
