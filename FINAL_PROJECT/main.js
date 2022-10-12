@@ -182,15 +182,19 @@ function audioMatchInit() {
 
 function matchSound() {
     if(matchAudio.currentTime > 1) {
+        if(windowInnerWidth < 450) {
+            matchAudio.playbackRate = 0.6;
+        } else {
+            matchAudio.playbackRate = 0.4;
+        }
         matchAudio.currentTime = 0;
-        matchAudio.playbackRate = 0.4;
         matchAudio.play();
     }
 }
 
 function vibro() {
     if ( navigator.vibrate ) {
-        window.navigator.vibrate(1000);
+        window.navigator.vibrate(800);
     }
 }
 
