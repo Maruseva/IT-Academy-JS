@@ -190,8 +190,7 @@ function matchSound() {
 
 function vibro() {
     if ( navigator.vibrate ) {
-        // вибрация 100мс
-        window.navigator.vibrate(100);
+        window.navigator.vibrate(1000);
     }
 }
 
