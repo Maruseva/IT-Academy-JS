@@ -22,7 +22,7 @@ class Game {
         this.ctx.fillStyle = color;
         this.ctx.font = font;
         this.ctx.textAlign='left';
-        this.ctx.textBaseline='middle'
+        this.ctx.textBaseline='middle';
         this.ctx.fillText(`ход: ${this.movesGame}`, x, y);
     }
 
@@ -31,7 +31,7 @@ class Game {
         this.ctx.fillStyle = color;
         this.ctx.font = font;
         this.ctx.textAlign='left';
-        this.ctx.textBaseline='middle'
+        this.ctx.textBaseline='middle';
         this.ctx.fillText(`очки: ${this.points}`, x, y);
     }
 
@@ -87,14 +87,13 @@ window.addEventListener('resize', setNewSize);
 const game = new Game(context, img[0]);
 
 document.addEventListener('pointerdown', pointerdownPicture);
-// canvas.addEventListener('touchstart', pointerdownPicture, {passive: false})
 
 const board = {color: 'rgba(255, 255, 255, 0.2)', w: '50', h: '50', itemsX: 9, itemsY: 9, cells: []};
-const score = {color: 'rgba(255, 255, 255, 0.9)', font: '24px Stalinist One'}
+const score = {color: 'rgba(255, 255, 255, 0.9)', font: '24px Stalinist One'};
 if(windowInnerWidth < 450) {
     board.w = windowInnerWidth / board.itemsX;
     board.h = board.w;
-    score.font = '20px Stalinist One'
+    score.font = '20px Stalinist One';
 }
 const elementsOnSprite = [
     {x: 322, y: 322},

@@ -1,13 +1,15 @@
 'use strict'
 window.onhashchange = changeURL;
+
 const sound = document.getElementById('sound');
-sound.addEventListener('click', turnOffSound)
+sound.addEventListener('click', turnOffSound);
 
 const backgroundAudio = new Audio('musik/muzyka.mp3');
 backgroundAudio.loop = true;
 const matchAudio = new Audio('musik/heartwav.mp3');
+
 var SPAState = {};
-const buttons = ['ИГРАТЬ', 'РЕКОРДЫ', 'ОБ ИГРЕ'];
+
 const page = document.getElementById('page');
 let sp = new URLSearchParams();
 sp.append('n', 'MARUSEVA_ALIENS_TABLEOFRECORDS');
@@ -32,6 +34,7 @@ async function changeURL(event) {
             game.stop()
             canvas.style.display = 'none';
             let newDiv = document.createElement('div');
+            const buttons = ['ИГРАТЬ', 'РЕКОРДЫ', 'ОБ ИГРЕ'];
             let arrBtn = [];
             newDiv.style.cssText = "flex-direction: column;";
 
@@ -58,7 +61,7 @@ async function changeURL(event) {
             }
             window.onbeforeunload = befUnload;
             window.onclose = befUnload;
-            // window.onhashchange= befUnload;
+            window.onpopstate = befUnload;
             break;
         case 'rules':
             canvas.style.display = 'none';
@@ -81,7 +84,7 @@ async function changeURL(event) {
                 let divRecords = document.createElement('div');
                 divRecords.className = 'btn';
                 divRecords.classList.add('divRecords');
-                divRecords.innerHTML = `${j}. ${dataArr[j-1].name}: ${dataArr[j-1].points}`
+                divRecords.innerHTML = `${j}. ${dataArr[j-1].name}: ${dataArr[j-1].points}`;
                 newDiv2.appendChild(divRecords);
             } 
             page.appendChild(newDiv2);
@@ -94,7 +97,7 @@ changeURL()
 function goGame() {
     SPAState.pageName = 'game';
     updateNewState (SPAState);
-    audioMatchInit()
+    audioMatchInit();
 }
 function goRecords() {
     SPAState.pageName = 'records';
@@ -111,7 +114,7 @@ function updateNewState (newState) {
 function gameEnd() {
     if (!(page.childNodes.length)) {
         const form = document.getElementById('form');
-        form.style.cssText = 'display: flex;'
+        form.style.cssText = 'display: flex;';
         const span = form.getElementsByTagName('span');
         span[0].innerHTML = `Ваш результат: ${game.points} 
         Введите ваше имя:`;
@@ -119,7 +122,7 @@ function gameEnd() {
         if(localStorage['aliens']) {
             input[0].value = `${JSON.parse(localStorage['aliens'])}`;
         }
-        const btn = form.getElementsByTagName('div')
+        const btn = form.getElementsByTagName('div');
 
         btn[0].addEventListener('click', saveUserData);
     }
@@ -133,7 +136,7 @@ async function saveUserData () {
     }
 
     if(!(userName)) {
-        return
+        return;
     }
 
     let userData = {'name': userName, 'points': game.points};
@@ -144,16 +147,16 @@ async function saveUserData () {
     let dataArr = JSON.parse(data.result);
     dataArr.push(userData);
 
-    const str = JSON.stringify(dataArr)
+    const str = JSON.stringify(dataArr);
     sp.append('v', str);
-    processingData ('UPDATE')
+    processingData ('UPDATE');
 
     game.movesGame = 20;
     game.points = 0;
     board.cells = [];
     
     const form = document.getElementById('form');
-    form.style.cssText = 'display: none;'
+    form.style.cssText = 'display: none;';
        
 }
 
@@ -164,7 +167,7 @@ async function processingData (command) {
     try {
         const response = await fetch(ajaxHandlerScript,{ method: 'post', body: sp });
         const data = await response.json();
-        return data
+        return data;
     }
     catch ( error ) {
         console.error(error);
@@ -183,7 +186,7 @@ function audioMatchInit() {
 function matchSound() {
     if(matchAudio.currentTime > 1) {
         if(windowInnerWidth < 450) {
-            matchAudio.playbackRate = 0.6;
+            matchAudio.playbackRate = 0.5;
         } else {
             matchAudio.playbackRate = 0.4;
         }
@@ -194,13 +197,13 @@ function matchSound() {
 
 function vibro() {
     if ( navigator.vibrate ) {
-        window.navigator.vibrate(800);
+        window.navigator.vibrate(400);
     }
 }
 
 function befUnload(event) {
     if(game.movesGame < 20) {
-        event.returnValue = 'Данные не будут сохранены!'
+        event.returnValue = 'Данные не будут сохранены!';
     }
 }
 

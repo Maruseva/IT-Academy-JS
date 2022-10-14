@@ -38,7 +38,7 @@ canvas {
     padding-top: 20px;
 }
 .divRules {
-    font-size: 21px
+    font-size: 21px;
 }
 .divRecords {
     font-size: 20px; 
@@ -68,7 +68,7 @@ canvas {
 #form > div {
     width: 310px; 
     cursor: pointer; 
-    padding-top: 15px
+    padding-top: 15px;
 }
 input {
     background: gainsboro; 
@@ -87,7 +87,7 @@ input {
         left: 0%;
     }
     .divRules {
-        font-size: 17px
+        font-size: 17px;
     }
 }
 
@@ -99,7 +99,7 @@ input {
         padding-top: 11px;
     }
     .divRules {
-        font-size: 14px
+        font-size: 14px;
     }
     .divRecords {
         font-size: 18px; 
